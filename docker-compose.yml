@@ -4,17 +4,20 @@ services:
     image: ghcr.io/hyperledger/aries-framework-go:0.1.8
     command: "start --agent-default-label GoMediator"
     environment:
-      - ARIESD_LOG_LEVEL=INFO
-      - ARIESD_API_HOST=localhost:8080
+      - ARIESD_LOG_LEVEL=DEBUG
+      - ARIESD_API_HOST=0.0.0.0:8080
       - ARIESD_AUTO_ACCEPT=true
       - ARIESD_DATABASE_TYPE=mem
-      - ARIESD_INBOUND_HOST=http@localhost:8081,ws@localhost:8082
+      - ARIESD_INBOUND_HOST=http@0.0.0.0:8081,ws@0.0.0.0:8082
       - ARIESD_INBOUND_HOST_EXTERNAL=http@http://localhost:8081,ws@ws://localhost:8082
       - ARIESD_OUTBOUND_TRANSPORT=http,ws
-      - ARIESD_WEBHOOK_URL=localhost:8082
+      - ARIESD_WEBHOOK_URL=netcat:8083
       - ARIESD_TRANSPORT_RETURN_ROUTE=all
-
     ports:
-      - 8080
-      - 8081
-      - 8082
+      - 8080:8080
+      - 8081:8081
+      - 8082:8082
+
+  netcat:
+    image: subfuzion/netcat:latest
+    command: -vl 8083
