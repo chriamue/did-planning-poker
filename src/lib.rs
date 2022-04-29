@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::*;
 
+pub mod mediation;
+
 #[wasm_bindgen]
 extern "C" {
     fn alert(s: &str);
@@ -31,9 +33,10 @@ mod tests {
 
     #[test]
     fn generate_did() {
-        let sign_keypair = ed25519_dalek::Keypair::generate(&mut OsRng);
+        let _sign_keypair = ed25519_dalek::Keypair::generate(&mut OsRng);
     }
 
+    #[ignore = "just for fun"]
     #[tokio::test]
     async fn send_oob() -> Result<(), Error> {
         let alice_private = "6QN8DfuN9hjgHgPvLXqgzqYE3jRRGRrmJQZkd5tL8paR"
@@ -65,24 +68,18 @@ mod tests {
             SignatureAlgorithm::EdDsa,
             &sign_keypair.to_bytes(),
         )?;
-        
 
         let jwe_object: Value = serde_json::from_str(&jwe_string)?;
-        
+
         let client = reqwest::Client::new();
         let res = client
-            .post("https://mediator.ssi.quest")
-            //.post("http://localhost:8081")
+            .post("http://localhost:8081")
             .json(&jwe_object)
             .send()
-            .await.unwrap();
+            .await
+            .unwrap();
         println!("{:?}", res);
 
         Ok(())
-    }
-
-    #[tokio::test]
-    async fn my_test() {
-        assert!(true);
     }
 }
