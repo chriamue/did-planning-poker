@@ -72,6 +72,7 @@ mod tests {
         let client = reqwest::Client::new();
         let res = client
             .post("https://mediator.ssi.quest")
+            //.post("http://localhost:8081")
             .json(&jwe_object)
             .send()
             .await.unwrap();
