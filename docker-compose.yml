@@ -11,7 +11,7 @@ services:
       - ARIESD_INBOUND_HOST=http@0.0.0.0:8081,ws@0.0.0.0:8082
       - ARIESD_INBOUND_HOST_EXTERNAL=http@http://localhost:8081,ws@ws://localhost:8082
       - ARIESD_OUTBOUND_TRANSPORT=http,ws
-      - ARIESD_WEBHOOK_URL=netcat:8083
+      - ARIESD_WEBHOOK_URL=http://netcat:8083
       - ARIESD_TRANSPORT_RETURN_ROUTE=all
     ports:
       - 8080:8080
