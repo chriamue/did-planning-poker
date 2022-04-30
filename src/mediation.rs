@@ -11,6 +11,7 @@ pub struct MediationRequest {
     pub id: String,
     #[serde(rename = "@type")]
     pub m_type: String,
+    pub typ: String
 }
 
 impl Default for MediationRequest {
@@ -18,6 +19,7 @@ impl Default for MediationRequest {
         MediationRequest {
             id: Uuid::new_v4().to_string(),
             m_type: "https://didcomm.org/coordinate-mediation/1.0/mediate-request".to_string(),
+            typ: "application/didcomm-plain+json".to_string()
         }
     }
 }
@@ -95,8 +97,8 @@ pub async fn accept_invitation(label: String, invitation: Value) -> String {
 mod tests {
     use super::*;
     use didcomm_rs::Error;
+    use reqwest::header::{CONTENT_TYPE, ACCEPT};
     use std::{thread, time};
-
     #[ignore = "not now"]
     #[tokio::test]
     async fn send_create_invitation() -> Result<(), Error> {
@@ -117,28 +119,38 @@ mod tests {
         Ok(())
     }
 
-    #[ignore = "not now"]
+    //#[ignore = "not now"]
     #[tokio::test]
     async fn send_mediation_request() -> Result<(), Error> {
         let invitation: Value = create_invitation("did-planning-poker".to_string()).await;
         let connection_id = accept_invitation("user".to_string(), invitation).await;
         let mut request = MediationRequest::default();
         request.id = connection_id;
-        println!("{}", serde_json::to_string(&request).unwrap());
+        let json = serde_json::to_string(&request).unwrap();
+        println!("{}", json);
 
         let client = reqwest::Client::new();
         let res = client
             .post("http://localhost:8081/")
+            /*.header(
+                CONTENT_TYPE,
+                "application/didcomm-plain+json",
+            )
+            .header(
+                ACCEPT,
+                "application/json",
+            )*/
             .json(&request)
+            //.body(json)
             .send()
             .await
             .unwrap();
-        println!("{}", res.text().await.unwrap());
+        println!("response: {}", res.text().await.unwrap());
 
         Ok(())
     }
 
-    //#[ignore = "not now"]
+    #[ignore = "not now"]
     #[tokio::test]
     async fn send_connection_request() -> Result<(), Error> {
         let mut invitation: Value = create_invitation("did-planning-poker".to_string()).await;
@@ -162,11 +174,7 @@ mod tests {
         let json = serde_json::to_string(&request.clone()).unwrap();
         //println!("{}", json);
 
-        socket
-            .write_message(Message::Text(
-                json,
-            ))
-            .unwrap();
+        socket.write_message(Message::Text(json)).unwrap();
 
         let _handler = thread::spawn(move || {
             if socket.can_read() {
