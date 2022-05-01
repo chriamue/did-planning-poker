@@ -21,3 +21,12 @@ services:
   netcat:
     image: subfuzion/netcat:latest
     command: -vl 8083
+
+  tcpdump:
+      image: nicolaka/netshoot
+      depends_on:
+        - mediator
+      command: tcpdump -i eth0 -w /data/dump.pcap
+      network_mode: service:mediator
+      volumes:
+        - $PWD/data:/data
