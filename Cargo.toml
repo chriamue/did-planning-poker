@@ -13,6 +13,7 @@ didcomm-rs = "0.7.2"
 did-key = "*"
 ed25519-dalek = { version = "1.0" }
 hex = { version = "0.4.3", features = ["serde"] }
+http = "0.2.7"
 rand_core = "0.5"
 reqwest = {version = "0.11", features=["json"] }
 serde = { version = "1.0", features = ["derive"] }

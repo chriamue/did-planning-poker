@@ -1,8 +1,6 @@
-use did_key::{generate, DIDCore, Ed25519KeyPair};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tokio_tungstenite::tungstenite::{connect, Message};
-use url::Url;
+
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -11,7 +9,7 @@ pub struct MediationRequest {
     pub id: String,
     #[serde(rename = "@type")]
     pub m_type: String,
-    pub typ: String
+    pub typ: String,
 }
 
 impl Default for MediationRequest {
@@ -19,7 +17,7 @@ impl Default for MediationRequest {
         MediationRequest {
             id: Uuid::new_v4().to_string(),
             m_type: "https://didcomm.org/coordinate-mediation/1.0/mediate-request".to_string(),
-            typ: "application/didcomm-plain+json".to_string()
+            typ: "application/didcomm-plain+json".to_string(),
         }
     }
 }
@@ -70,7 +68,7 @@ pub async fn create_invitation(label: String) -> Value {
     let request = CreateInvitation { label: label };
     let client = reqwest::Client::new();
     let res = client
-        .post("http://localhost:8080/outofband/create-invitation")
+        .post("http://localhost:8000/outofband/create-invitation")
         .json(&request)
         .send()
         .await
@@ -97,9 +95,11 @@ pub async fn accept_invitation(label: String, invitation: Value) -> String {
 mod tests {
     use super::*;
     use didcomm_rs::Error;
-    use reqwest::header::{CONTENT_TYPE, ACCEPT};
     use std::{thread, time};
-    #[ignore = "not now"]
+    use tokio_tungstenite::tungstenite::{connect, Message};
+    use url::Url;
+
+    //#[ignore = "not now"]
     #[tokio::test]
     async fn send_create_invitation() -> Result<(), Error> {
         let invitation: Value = create_invitation("did-planning-poker".to_string()).await;

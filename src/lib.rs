@@ -1,6 +1,8 @@
 use wasm_bindgen::prelude::*;
 
+pub mod didexchange;
 pub mod mediation;
+pub mod ping;
 
 #[wasm_bindgen]
 extern "C" {
