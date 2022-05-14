@@ -9,13 +9,30 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use url::Url;
 use uuid::Uuid;
+use didcomm_mediator::protocols::trustping::TrustPingResponseBuilder;
+
+use reqwest::header::{ACCEPT, CONTENT_TYPE};
+
+pub async fn ping(key: &KeyPair) {
+    let did = key.get_did_document(Default::default()).id;
+    let request = TrustPingResponseBuilder::new().did(did).build().unwrap();
+
+    let client = reqwest::Client::new();
+    let res = client
+        .post("http://localhost:8000/didcomm")
+        .header(CONTENT_TYPE, "application/json")
+        //.body(jws_string)
+        .send()
+        .await
+        .unwrap();
+    println!("{}", res.text().await.unwrap());
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::mediation::create_invitation;
     use didcomm_rs::Error;
-    use reqwest::header::{ACCEPT, CONTENT_TYPE};
     use std::{thread, time};
 
     //#[ignore = "not now"]
