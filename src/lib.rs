@@ -1,14 +1,12 @@
 use base58::{FromBase58, ToBase58};
 use did_key::{generate, KeyMaterial, KeyPair, X25519KeyPair};
 
-
 pub mod didexchange;
 pub mod mediation;
 pub mod ping;
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm;
-
 
 pub fn key_from_b58(private_key: String) -> KeyPair {
     generate::<X25519KeyPair>(Some(&private_key.from_base58().unwrap()))
