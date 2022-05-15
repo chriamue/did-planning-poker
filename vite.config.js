@@ -6,7 +6,7 @@ import wasmPack from 'vite-plugin-wasm-pack';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), wasmPack('../')],
+  plugins: [vue(), wasmPack(['./did_planning_poker'], [])],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

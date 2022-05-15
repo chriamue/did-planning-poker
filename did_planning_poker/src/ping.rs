@@ -1,7 +1,7 @@
 use did_key::*;
 use didcomm_mediator::message::sign_and_encrypt;
 use didcomm_mediator::protocols::trustping::TrustPingResponseBuilder;
-use std::time::Instant;
+use instant::Instant;
 
 pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'static str> {
     let did_doc = key.get_did_document(Default::default());
@@ -14,7 +14,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
 
     let request = sign_and_encrypt(&request, &did_to, &key);
 
-    let start = Instant::now();
+    let start =  Instant::now();
     let client = reqwest::Client::new();
     let res = client.post(host).json(&request).send().await.unwrap();
 
