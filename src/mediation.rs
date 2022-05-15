@@ -96,7 +96,6 @@ mod tests {
     use super::*;
     use didcomm_rs::Error;
     use std::{thread, time};
-    use tokio_tungstenite::tungstenite::{connect, Message};
     use url::Url;
 
     //#[ignore = "not now"]
@@ -150,41 +149,4 @@ mod tests {
         Ok(())
     }
 
-    #[ignore = "not now"]
-    #[tokio::test]
-    async fn send_connection_request() -> Result<(), Error> {
-        let mut invitation: Value = create_invitation("did-planning-poker".to_string()).await;
-        invitation["my_label"] = "user".to_string().into();
-        let connection_id = accept_invitation("user".to_string(), invitation.clone()).await;
-
-        let mut request = ConnectionRequest::default();
-
-        let mut request = MediationRequest::default();
-        request.id = connection_id;
-
-        let (mut socket, response) =
-            connect(Url::parse("ws://localhost:8082/").unwrap()).expect("Can't connect");
-
-        println!("Connected to the server");
-        println!("Response HTTP code: {}", response.status());
-        println!("Response contains the following headers:");
-        for (ref header, _value) in response.headers() {
-            println!("* {}", header);
-        }
-        let json = serde_json::to_string(&request.clone()).unwrap();
-        //println!("{}", json);
-
-        socket.write_message(Message::Text(json)).unwrap();
-
-        let _handler = thread::spawn(move || {
-            if socket.can_read() {
-                let msg = socket.read_message().expect("Error reading message");
-                println!("Received: {}", msg);
-            }
-        });
-
-        thread::sleep(time::Duration::from_millis(2000));
-
-        Ok(())
-    }
 }
