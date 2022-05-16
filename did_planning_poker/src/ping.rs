@@ -14,7 +14,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
 
     let request = sign_and_encrypt(&request, &did_to, &key);
 
-    let start =  Instant::now();
+    let start = Instant::now();
     let client = reqwest::Client::new();
     let res = client.post(host).json(&request).send().await.unwrap();
 

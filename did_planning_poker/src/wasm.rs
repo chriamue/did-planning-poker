@@ -4,6 +4,11 @@ use did_key::{generate, KeyMaterial, X25519KeyPair};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
+pub fn init_panic_hook() {
+    console_error_panic_hook::set_once();
+}
+
+#[wasm_bindgen]
 pub fn generate_private_key() -> String {
     let key = generate::<X25519KeyPair>(None);
     key.private_key_bytes().to_base58()
