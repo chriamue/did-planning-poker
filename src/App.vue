@@ -2,9 +2,10 @@
 import { ref } from "vue";
 import InvitationComp from "./components/InvitationComp.vue";
 
-import init from "did_planning_poker";
+import init, {init_panic_hook} from "did_planning_poker";
 const wasm_loaded = ref(false);
 init().then(() => {
+  init_panic_hook();
   wasm_loaded.value = true;
   console.log("wasm loaded");
 });

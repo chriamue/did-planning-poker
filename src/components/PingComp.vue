@@ -1,30 +1,20 @@
 <script setup>
 import { ref } from "vue";
-import {
-  generate_private_key,
-  ping,
-  init_panic_hook,
-} from "did_planning_poker";
+
+import { useStore } from '@/stores/ping'
 const props = defineProps({
   host: String,
   did: String,
 });
-const key = ref("");
-const ping_ms = ref(undefined);
+const store = useStore()
 const interval = setInterval(async () => {
-  init_panic_hook();
-  let private_key = generate_private_key();
-  console.log(props.did, props.host);
-  ping(private_key, props.did, props.host).then(
-    (value) => (ping_ms.value = value)
-  );
-  key.value = private_key;
+  store.sendPing(props.did, props.host);
 }, 3000);
 </script>
 
 <template>
   <div class="ping" v-if="interval">
-    {{ ping_ms }}
+    {{ store.elapsed }}
   </div>
 </template>
 
