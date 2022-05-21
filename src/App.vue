@@ -1,5 +1,13 @@
 <script setup>
+import { ref } from "vue";
 import InvitationComp from "./components/InvitationComp.vue";
+
+import init from "did_planning_poker";
+const wasm_loaded = ref(false);
+init().then(() => {
+  wasm_loaded.value = true;
+  console.log("wasm loaded");
+});
 </script>
 
 <template>
@@ -7,7 +15,7 @@ import InvitationComp from "./components/InvitationComp.vue";
     <h1>Did Planning Poker</h1>
   </header>
 
-  <main>
+  <main v-if="wasm_loaded">
     <Suspense>
       <invitation-comp />
 

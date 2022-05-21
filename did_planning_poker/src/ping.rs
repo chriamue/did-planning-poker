@@ -31,6 +31,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
         .unwrap();
 
     if !response.status().is_success() {
+        println!("{:?}", response.status());
         return Err("ping failed");
     }
 
@@ -45,7 +46,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
     let response = client.post(host).json(&request).send().await.unwrap();
 
     if !response.status().is_success() {
-        return Err("ping failed");
+        return Err("ping pickup failed");
     }
 
     let response_json = response.text().await.unwrap();
@@ -64,7 +65,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
     }
 
     if !pong {
-        return Err("ping failed");
+        return Err("no pong for pickup");
     }
 
     let duration = start.elapsed();
