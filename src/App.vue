@@ -1,14 +1,5 @@
 <script setup>
-import { ref } from "vue";
 import InvitationComp from "./components/InvitationComp.vue";
-
-import init, {init_panic_hook} from "did_planning_poker";
-const wasm_loaded = ref(false);
-init().then(() => {
-  init_panic_hook();
-  wasm_loaded.value = true;
-  console.log("wasm loaded");
-});
 </script>
 
 <template>
@@ -16,11 +7,9 @@ init().then(() => {
     <h1>Did Planning Poker</h1>
   </header>
 
-  <main v-if="wasm_loaded">
+  <main>
     <Suspense>
       <invitation-comp />
-
-      <!-- loading state via #fallback slot -->
       <template #fallback> Loading... </template>
     </Suspense>
   </main>

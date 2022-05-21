@@ -1,14 +1,12 @@
 <script setup>
-import { ref } from "vue";
-
-import { useStore } from '@/stores/ping'
+import { useStore } from "@/stores/ping";
 const props = defineProps({
   host: String,
   did: String,
 });
-const store = useStore()
+const store = useStore();
 const interval = setInterval(async () => {
-  store.sendPing(props.did, props.host);
+  store.sendPing(props.did, `${props.host}/didcomm`);
 }, 3000);
 </script>
 
