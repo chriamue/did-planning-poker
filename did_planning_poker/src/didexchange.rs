@@ -88,13 +88,15 @@ mod tests {
     //#[ignore = "not now"]
     #[tokio::test]
     async fn send_didexchange() -> Result<(), Error> {
+        let host = "https://mediator.ssi.quest";
         let send_key = generate::<X25519KeyPair>(None);
 
         let send_priv_key = send_key.private_key_bytes();
         let did_doc = send_key.get_did_document(CONFIG_JOSE_PUBLIC);
         let send_did = did_doc.id.clone();
 
-        let invitation: Value = create_invitation("did-planning-poker".to_string()).await;
+        let invitation: Value =
+            create_invitation("did-planning-poker".to_string(), host.to_string()).await;
         println!("{}", serde_json::to_string_pretty(&invitation).unwrap());
 
         let body = didexchange_body(send_did.to_string(), &invitation, &did_doc);
@@ -124,7 +126,7 @@ mod tests {
 
         let client = reqwest::Client::new();
         let res = client
-            .post("http://localhost:8000/didcomm")
+            .post(format!("{}/didcomm", host))
             .body(ready_to_send)
             .header(CONTENT_TYPE, "application/didcomm-envelope-enc")
             .send()

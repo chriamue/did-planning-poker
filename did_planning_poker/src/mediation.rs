@@ -64,11 +64,11 @@ impl Default for ConnectionRequest {
     }
 }
 
-pub async fn create_invitation(label: String) -> Value {
+pub async fn create_invitation(label: String, host: String) -> Value {
     let request = CreateInvitation { label: label };
     let client = reqwest::Client::new();
     let res = client
-        .post("http://localhost:8000/outofband/create-invitation")
+        .post(format!("{}/outofband/create-invitation", host))
         .json(&request)
         .send()
         .await
@@ -76,12 +76,12 @@ pub async fn create_invitation(label: String) -> Value {
     res.json().await.unwrap()
 }
 
-pub async fn accept_invitation(label: String, invitation: Value) -> String {
+pub async fn accept_invitation(label: String, invitation: Value, host: String) -> String {
     let mut invitation = invitation.clone();
     invitation["my_label"] = label.into();
     let client = reqwest::Client::new();
     let res = client
-        .post("http://localhost:8080/outofband/accept-invitation")
+        .post(format!("{}/outofband/accept-invitation", host))
         .json(&invitation)
         .send()
         .await
@@ -101,13 +101,17 @@ mod tests {
     //#[ignore = "not now"]
     #[tokio::test]
     async fn send_create_invitation() -> Result<(), Error> {
-        let invitation: Value = create_invitation("did-planning-poker".to_string()).await;
-        let connection_id = accept_invitation("user".to_string(), invitation).await;
+        let host = "https://mediator.ssi.quest";
+        let invitation: Value =
+            create_invitation("did-planning-poker".to_string(), host.to_string()).await;
+        let connection_id =
+            accept_invitation("user".to_string(), invitation, host.to_string()).await;
 
         let client = reqwest::Client::new();
         let res = client
             .post(format!(
-                "http://localhost:8080/connections/{}/accept-request",
+                "{}/connections/{}/accept-request",
+                host.to_string(),
                 connection_id
             ))
             .send()
@@ -121,8 +125,11 @@ mod tests {
     //#[ignore = "not now"]
     #[tokio::test]
     async fn send_mediation_request() -> Result<(), Error> {
-        let invitation: Value = create_invitation("did-planning-poker".to_string()).await;
-        let connection_id = accept_invitation("user".to_string(), invitation).await;
+        let host = "https://mediator.ssi.quest";
+        let invitation: Value =
+            create_invitation("did-planning-poker".to_string(), host.to_string()).await;
+        let connection_id =
+            accept_invitation("user".to_string(), invitation, host.to_string()).await;
         let mut request = MediationRequest::default();
         request.id = connection_id;
         let json = serde_json::to_string(&request).unwrap();
