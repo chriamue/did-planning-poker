@@ -58,7 +58,9 @@ export const useStore = defineStore({
         mediator_did: this.mediator_did,
       };
       let session_json = JSON.stringify(session);
-      return `${window.location.href}?join=${btoa(session_json)}`;
+      return `${window.location.protocol}//${window.location.host}${
+        window.location.pathname
+      }?join=${btoa(session_json)}`;
     },
   },
   actions: {
@@ -76,6 +78,12 @@ export const useStore = defineStore({
           this.m_invitation_str = JSON.stringify(invitation);
           this.m_invitation = invitation;
         });
+    },
+    joinSession(joinParameter) {
+      let session = JSON.parse(atob(joinParameter));
+      this.m_id = session.id;
+      this.m_host = session.host;
+      this.mediator_did = session.mediator_did;
     },
   },
 });
