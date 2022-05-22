@@ -102,6 +102,7 @@ export const useStore = defineStore({
         session.id,
         alias,
         useIdStore().key,
+        session.did,
         session.mediator_did,
         session.host + "/didcomm"
       )
