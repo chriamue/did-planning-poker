@@ -1,3 +1,4 @@
+use crate::jsmessage::JsMessage;
 use crate::key_from_b58;
 use did_key::{DIDCore, KeyMaterial, KeyPair};
 use didcomm_mediator::message::sign_and_encrypt;
@@ -19,6 +20,7 @@ pub struct Handler {
 
 #[wasm_bindgen]
 impl Handler {
+    #[wasm_bindgen(constructor)]
     pub fn new(private_key: String, mediator_host: String, mediator_did: String) -> Self {
         let key = key_from_b58(private_key);
         let did = key.get_did_document(Default::default()).id;
@@ -55,14 +57,38 @@ impl Handler {
             assert!(&received.is_ok());
             let message: Message = received.unwrap();
 
-            for attachment in message.get_attachments() {
+            let messages: Vec<JsMessage> = message.get_attachments().map(|attachment| {
                 let response_json = attachment.data.json.as_ref().unwrap();
-                let received =
-                    Message::receive(response_json, Some(&private_key), None, None).unwrap();
-                println!("{:?}", received);
-            }
-            Ok(JsValue::default())
+                Message::receive(response_json, Some(&private_key), None, None)
+                    .unwrap()
+                    .into()
+            }).collect();
+            Ok(JsValue::from_serde(&messages).unwrap())
         })
+    }
+
+    pub fn handle(&self, message: &JsValue) {
+        let messages: Vec<JsMessage> = message.into_serde().unwrap();
+        let this = JsValue::null();
+        for message in &messages {
+            match message.m_type.as_str() {
+                "https://didcomm.org/trust-ping/2.0/ping-response" => {
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "ping-response",
+                        "id": message.id.to_string(),
+                        "thid": message.thid.as_ref().unwrap().to_string()
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("ping") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                },
+                _ => ()
+            }
+        }
     }
 
     pub fn on(&mut self, protocol: String, f: js_sys::Function) {

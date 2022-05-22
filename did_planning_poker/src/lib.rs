@@ -9,6 +9,8 @@ pub mod ping;
 #[cfg(target_arch = "wasm32")]
 pub mod handler;
 #[cfg(target_arch = "wasm32")]
+pub mod jsmessage;
+#[cfg(target_arch = "wasm32")]
 pub mod wasm;
 
 pub fn key_from_b58(private_key: String) -> KeyPair {

@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { ping } from "did_planning_poker";
+import { send_ping } from "did_planning_poker";
 
 import { useStore as useIdStore } from "./id";
 
@@ -9,6 +9,8 @@ export const useStore = defineStore({
   state: () => ({
     /** @type {number} */
     elapsed: 0,
+    /** @type {Map<string, number>} */
+    timestamps: new Map()
   }),
   getters: {
     /**
@@ -21,17 +23,21 @@ export const useStore = defineStore({
      * send ping
      */
     sendPing(did, host) {
-      ping(useIdStore().key, did, host)
-        .then((value) => (this.elapsed = value))
-        .catch(console.error);
+      send_ping(useIdStore().key, did, host).then(id => this.timestamps.set(id, performance.now())).catch(console.error);
     },
 
     /**
      * update ping response
-     * @param {number} elapsed
+     * @param {string} thid
      */
-    receivePong(elapsed) {
-      this.elapsed = elapsed;
+    receivePong(thid) {
+      let timestamp = this.timestamps.get(thid);
+      if(timestamp) {
+        let now = performance.now();
+        this.elapsed = Math.floor( now - timestamp );
+      } else  {
+        this.elapsed = 10000;
+      }
     },
   },
 });

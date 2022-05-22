@@ -5,6 +5,35 @@ use didcomm_mediator::protocols::trustping::TrustPingResponseBuilder;
 use didcomm_rs::Message;
 use instant::Instant;
 
+pub async fn send_ping(key: &KeyPair, did_to: String, host: String) -> Result<String, &'static str> {
+    let did_doc = key.get_did_document(Default::default());
+    let did_from = did_doc.id.to_string();
+
+    let client = reqwest::Client::new();
+
+    let request = TrustPingResponseBuilder::new()
+        .build()
+        .unwrap()
+        .from(&did_from);
+
+    let id = request.get_didcomm_header().id.to_string();
+
+    let request = sign_and_encrypt(&request, &did_to, key);
+
+    let response = client
+        .post(host.clone())
+        .json(&request)
+        .send()
+        .await
+        .unwrap();
+
+    if !response.status().is_success() {
+        println!("{:?}", response.status());
+        return Err("ping failed");
+    }
+    Ok(id)
+}
+
 pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'static str> {
     let did_doc = key.get_did_document(Default::default());
     let did_from = did_doc.id.to_string();

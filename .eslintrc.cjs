@@ -3,7 +3,7 @@ require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
   root: true,
-  ignorePatterns: ["pkg/*", "*/pkg/*"],
+  ignorePatterns: ["pkg/*", "*/pkg/*", "did_planning_poker/"],
   extends: [
     "plugin:vue/vue3-essential",
     "eslint:recommended",
