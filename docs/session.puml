@@ -1,0 +1,10 @@
+@startuml session
+Host -> Mediation: fetch invitation
+Mediation --> Host: invitation response
+Host -> Host: start new session
+Host -> Client: share session information
+Client -> Mediation: join session
+Mediation -> Host: forward session join
+Host -> Mediation: share session state
+Mediation -> Client: forward session state
+@enduml
