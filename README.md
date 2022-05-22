@@ -1,4 +1,5 @@
 # did-planning-poker
+
 Planning Poker using did comm
 
 ## Project Setup
@@ -24,3 +25,9 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Project Architecture
+
+### Session
+
+![Session Sequence Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/chriamue/did-planning-poker/main/docs/session.puml)
