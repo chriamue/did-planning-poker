@@ -21,7 +21,9 @@ export const useStore = defineStore({
      * send ping
      */
     sendPing(did, host) {
-      ping(useIdStore().key, did, host).then((value) => (this.elapsed = value));
+      ping(useIdStore().key, did, host)
+        .then((value) => (this.elapsed = value))
+        .catch(console.error);
     },
 
     /**

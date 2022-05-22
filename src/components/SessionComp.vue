@@ -14,8 +14,14 @@ const store = useStore();
   </div>
   <div class="session form-group" v-else>
     <label for="host_input">Host Url</label>
-    <input id="host_input" type="text" v-model="host">
-    <button type="button" class="btn btn-primary" @click="store.newSession(host)">New Session</button>
+    <input id="host_input" type="text" v-model="host" />
+    <button
+      type="button"
+      class="btn btn-primary"
+      @click="store.newSession(host)"
+    >
+      New Session
+    </button>
   </div>
 </template>
 

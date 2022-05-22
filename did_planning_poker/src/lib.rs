@@ -1,5 +1,5 @@
-use base58::{FromBase58, ToBase58};
-use did_key::{generate, KeyMaterial, KeyPair, X25519KeyPair};
+use base58::FromBase58;
+use did_key::{generate, KeyPair, X25519KeyPair};
 
 pub mod didexchange;
 pub mod mediation;
@@ -12,9 +12,12 @@ pub fn key_from_b58(private_key: String) -> KeyPair {
     generate::<X25519KeyPair>(Some(&private_key.from_base58().unwrap()))
 }
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base58::ToBase58;
+    use did_key::KeyMaterial;
 
     #[test]
     fn test_key_from_b58() {

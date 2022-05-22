@@ -1,6 +1,8 @@
 // @ts-check
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
+import { did_from_b58 } from "did_planning_poker";
+import { useStore as useIdStore } from "./id";
 
 export const useStore = defineStore({
   id: "session",
@@ -46,6 +48,17 @@ export const useStore = defineStore({
      */
     invitation_str() {
       return this.m_invitation_str;
+    },
+    sessionInvitation() {
+      const idStore = useIdStore();
+      let session = {
+        id: this.id,
+        host: this.m_host,
+        did: did_from_b58(idStore.key),
+        mediator_did: this.mediator_did,
+      };
+      let session_json = JSON.stringify(session);
+      return `${window.location.href}?join=${btoa(session_json)}`;
     },
   },
   actions: {

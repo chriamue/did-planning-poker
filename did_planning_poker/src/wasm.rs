@@ -1,6 +1,6 @@
 use crate::key_from_b58;
 use base58::ToBase58;
-use did_key::{generate, KeyMaterial, X25519KeyPair};
+use did_key::{generate, DIDCore, KeyMaterial, X25519KeyPair};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -18,4 +18,11 @@ pub fn generate_private_key() -> String {
 pub async fn ping(private_key: String, did_to: String, host: String) -> u32 {
     let key = key_from_b58(private_key);
     crate::ping::ping(&key, did_to, host).await.unwrap()
+}
+
+#[wasm_bindgen]
+pub fn did_from_b58(private_key: String) -> String {
+    let key = key_from_b58(private_key);
+    let did_doc = key.get_did_document(Default::default());
+    did_doc.id
 }
