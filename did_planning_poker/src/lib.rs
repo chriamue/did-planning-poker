@@ -2,6 +2,7 @@ use base58::FromBase58;
 use did_key::{generate, KeyPair, X25519KeyPair};
 
 pub mod didexchange;
+pub mod join;
 pub mod mediation;
 pub mod ping;
 
@@ -11,7 +12,6 @@ pub mod wasm;
 pub fn key_from_b58(private_key: String) -> KeyPair {
     generate::<X25519KeyPair>(Some(&private_key.from_base58().unwrap()))
 }
-
 
 #[cfg(test)]
 mod tests {
