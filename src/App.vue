@@ -1,5 +1,6 @@
 <script setup>
-import InvitationComp from "./components/InvitationComp.vue";
+import InvitationComp from "@/components/InvitationComp.vue";
+import SessionComp from "@/components/SessionComp.vue";
 </script>
 
 <template>
@@ -12,6 +13,7 @@ import InvitationComp from "./components/InvitationComp.vue";
       <invitation-comp />
       <template #fallback> Loading... </template>
     </Suspense>
+    <session-comp />
   </main>
 </template>
 
