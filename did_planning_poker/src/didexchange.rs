@@ -1,6 +1,4 @@
-use did_key::{
-    generate, Document, Ed25519KeyPair, KeyMaterial, KeyPair,
-};
+use did_key::{generate, Document, Ed25519KeyPair, KeyMaterial, KeyPair};
 use didcomm_rs::{
     crypto::{CryptoAlgorithm, SignatureAlgorithm},
     Message,
@@ -75,17 +73,13 @@ pub fn build_message(
         .unwrap()
 }
 
+#[cfg(feature = "bin")]
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::mediation::create_invitation;
-    use didcomm_rs::{
-        Error
-    };
-    use did_key::{
-        generate, DIDCore, KeyMaterial, X25519KeyPair,
-        CONFIG_JOSE_PUBLIC,
-    };
+    use did_key::{generate, DIDCore, KeyMaterial, X25519KeyPair, CONFIG_JOSE_PUBLIC};
+    use didcomm_rs::Error;
     use reqwest::header::CONTENT_TYPE;
 
     //#[ignore = "not now"]

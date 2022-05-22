@@ -34,6 +34,7 @@ uuid = { version = "1", features = ["serde", "v4"] }
 
 [target.wasm32-unknown-unknown.dependencies]
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+wasm-bindgen-test = "0.3.30"
 wasm-bindgen-futures = { version = "0.4" }
 js-sys = "0.3"
 getrandom = { version = "0.1", features = ["wasm-bindgen"] }

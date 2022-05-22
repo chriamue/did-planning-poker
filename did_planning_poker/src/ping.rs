@@ -73,6 +73,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
     Ok(duration.as_millis() as u32)
 }
 
+#[cfg(feature = "bin")]
 #[cfg(test)]
 mod tests {
     use super::*;

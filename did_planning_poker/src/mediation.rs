@@ -91,6 +91,7 @@ pub async fn accept_invitation(label: String, invitation: Value, host: String) -
     connection_id.to_string()
 }
 
+#[cfg(feature = "bin")]
 #[cfg(test)]
 mod tests {
     use super::*;
