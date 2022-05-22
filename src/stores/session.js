@@ -82,11 +82,12 @@ export const useStore = defineStore({
           this.m_invitation = invitation;
         });
     },
-    joinSession(joinParameter) {
+    joinSession(joinParameter, alias) {
       let session = JSON.parse(atob(joinParameter));
       this.m_id = session.id;
       this.m_host = session.host;
       this.mediator_did = session.mediator_did;
+      useIdStore().setAlias(alias);
     },
     startHandler() {
       let key = useIdStore().private_key;
@@ -94,7 +95,7 @@ export const useStore = defineStore({
       let mediator_did = this.mediator_did;
       let handler = new Handler(key, mediator_host, mediator_did);
       handler.on("ping", (value) => {
-        usePingStore().receivePong(value.thid)
+        usePingStore().receivePong(value.thid);
       });
       this.m_handler = handler;
       this.m_interval = setInterval(() => {

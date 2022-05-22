@@ -5,11 +5,6 @@ import PingComp from "./PingComp.vue";
 const host = import.meta.env.VITE_MEDIATOR;
 const store = useStore();
 const details = ref(false);
-let params = new URLSearchParams(document.location.search);
-let join = params.get("join");
-if (join) {
-  store.joinSession(join);
-}
 const newSession = () => {
   store.newSession(host).then(() => store.startHandler());
 };
@@ -18,7 +13,7 @@ const newSession = () => {
 <template>
   <div class="session" v-if="store.id">
     <Suspense>
-      <ping-comp v-if="store.invitation" :host="store.host" :did="store.did" />
+      <ping-comp :host="store.host" :did="store.did" />
       <template #fallback> Loading... </template>
     </Suspense>
     <div v-if="details">

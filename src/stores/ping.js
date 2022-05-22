@@ -10,7 +10,7 @@ export const useStore = defineStore({
     /** @type {number} */
     elapsed: 0,
     /** @type {Map<string, number>} */
-    timestamps: new Map()
+    timestamps: new Map(),
   }),
   getters: {
     /**
@@ -23,7 +23,9 @@ export const useStore = defineStore({
      * send ping
      */
     sendPing(did, host) {
-      send_ping(useIdStore().key, did, host).then(id => this.timestamps.set(id, performance.now())).catch(console.error);
+      send_ping(useIdStore().key, did, host)
+        .then((id) => this.timestamps.set(id, performance.now()))
+        .catch(console.error);
     },
 
     /**
@@ -32,10 +34,10 @@ export const useStore = defineStore({
      */
     receivePong(thid) {
       let timestamp = this.timestamps.get(thid);
-      if(timestamp) {
+      if (timestamp) {
         let now = performance.now();
-        this.elapsed = Math.floor( now - timestamp );
-      } else  {
+        this.elapsed = Math.floor(now - timestamp);
+      } else {
         this.elapsed = 10000;
       }
     },

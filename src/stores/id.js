@@ -7,6 +7,7 @@ export const useStore = defineStore({
   state: () => ({
     /** @type {string} */
     private_key: generate_private_key(),
+    m_alias: "anonymous",
   }),
   getters: {
     /**
@@ -14,6 +15,9 @@ export const useStore = defineStore({
      */
     key() {
       return this.private_key;
+    },
+    alias() {
+      return this.m_alias;
     },
   },
   actions: {
@@ -26,9 +30,17 @@ export const useStore = defineStore({
 
     /**
      * import existing private key
+     * @param {string} private_key
      */
     import(private_key) {
       this.private_key = private_key;
+    },
+    /**
+     * update ping response
+     * @param {string} alias
+     */
+    setAlias(alias) {
+      this.m_alias = alias;
     },
   },
 });
