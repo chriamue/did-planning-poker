@@ -12,7 +12,9 @@ export const useStore = defineStore({
     /** @type {string} */
     m_id: undefined,
     /** @type {string} */
-    mediator_did: undefined,
+    m_mediator_did: undefined,
+    /** @type {string} */
+    m_did: undefined,
     /** @type {string} */
     m_invitation_str: undefined,
     /** @type {object} */
@@ -39,7 +41,13 @@ export const useStore = defineStore({
      * @returns { string }
      */
     did() {
-      return this.mediator_did;
+      return this.m_did;
+    },
+    /**
+     * @returns { string }
+     */
+    mediator_did() {
+      return this.m_mediator_did;
     },
     /**
      * @returns { string }
@@ -59,7 +67,7 @@ export const useStore = defineStore({
         id: this.id,
         host: this.m_host,
         did: did_from_b58(idStore.key),
-        mediator_did: this.mediator_did,
+        mediator_did: this.m_mediator_did,
       };
       let session_json = JSON.stringify(session);
       return `${window.location.protocol}//${window.location.host}${
@@ -78,7 +86,8 @@ export const useStore = defineStore({
         .then(async (r) => (await r.json()).invitation)
         .then((invitation) => {
           this.m_id = uuidv4();
-          this.mediator_did = invitation.services[0].recipientKeys[0];
+          this.m_did = did_from_b58(useIdStore().key);
+          this.m_mediator_did = invitation.services[0].recipientKeys[0];
           this.m_invitation_str = JSON.stringify(invitation);
           this.m_invitation = invitation;
         });
@@ -87,7 +96,7 @@ export const useStore = defineStore({
       let session = JSON.parse(atob(joinParameter));
       this.m_id = session.id;
       this.m_host = session.host;
-      this.mediator_did = session.mediator_did;
+      this.m_mediator_did = session.mediator_did;
       useIdStore().setAlias(alias);
       send_join(
         session.id,
@@ -102,7 +111,7 @@ export const useStore = defineStore({
     startHandler() {
       let key = useIdStore().private_key;
       let mediator_host = this.m_host + "/didcomm";
-      let mediator_did = this.mediator_did;
+      let mediator_did = this.m_mediator_did;
       let handler = new Handler(key, mediator_host, mediator_did);
       handler.on("ping", (value) => {
         usePingStore().receivePong(value.thid);

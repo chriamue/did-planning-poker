@@ -13,7 +13,7 @@ const newSession = () => {
 <template>
   <div class="session" v-if="store.id">
     <Suspense>
-      <ping-comp :host="store.host" :did="store.did" />
+      <ping-comp :host="store.host" :did="store.mediator_did" />
       <template #fallback> Loading... </template>
     </Suspense>
     <div v-if="details">
