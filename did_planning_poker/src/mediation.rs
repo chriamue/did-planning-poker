@@ -65,7 +65,7 @@ impl Default for ConnectionRequest {
 }
 
 pub async fn create_invitation(label: String, host: String) -> Value {
-    let request = CreateInvitation { label: label };
+    let request = CreateInvitation { label };
     let client = reqwest::Client::new();
     let res = client
         .post(format!("{}/outofband/create-invitation", host))
@@ -95,8 +95,6 @@ pub async fn accept_invitation(label: String, invitation: Value, host: String) -
 mod tests {
     use super::*;
     use didcomm_rs::Error;
-    use std::{thread, time};
-    use url::Url;
 
     //#[ignore = "not now"]
     #[tokio::test]

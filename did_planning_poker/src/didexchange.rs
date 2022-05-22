@@ -1,10 +1,9 @@
 use did_key::{
-    generate, DIDCore, Document, Ed25519KeyPair, KeyMaterial, KeyPair, X25519KeyPair,
-    CONFIG_JOSE_PUBLIC,
+    generate, Document, Ed25519KeyPair, KeyMaterial, KeyPair,
 };
 use didcomm_rs::{
-    crypto::{CryptoAlgorithm, SignatureAlgorithm, Signer},
-    Error, JwmHeader, Message, MessageType,
+    crypto::{CryptoAlgorithm, SignatureAlgorithm},
+    Message,
 };
 use serde_json::Value;
 
@@ -29,7 +28,7 @@ fn example_body() -> String {
 pub fn didexchange_body(send_did: String, invitation: &Value, did_doc: &Document) -> Value {
     let inv_id = invitation["invitation"]["@id"].as_str().unwrap();
     let service = invitation["invitation"]["services"].as_array().unwrap()[0].clone();
-    let inv_did = service["recipientKeys"].as_array().unwrap()[0]
+    let _inv_did = service["recipientKeys"].as_array().unwrap()[0]
         .as_str()
         .unwrap()
         .to_string();
@@ -37,7 +36,7 @@ pub fn didexchange_body(send_did: String, invitation: &Value, did_doc: &Document
     let doc_json = serde_json::to_string_pretty(did_doc).unwrap();
 
     body["~thread"]["pthid"] = inv_id.into();
-    body["did"] = send_did.to_string().into();
+    body["did"] = send_did.into();
     body["did_doc~attach"] = serde_json::from_str(&doc_json).unwrap();
 
     println!("{}", serde_json::to_string_pretty(&body).unwrap());
@@ -80,9 +79,13 @@ pub fn build_message(
 mod tests {
     use super::*;
     use crate::mediation::create_invitation;
-    use base58::ToBase58;
-
-    use rand_core::OsRng;
+    use didcomm_rs::{
+        Error
+    };
+    use did_key::{
+        generate, DIDCore, KeyMaterial, X25519KeyPair,
+        CONFIG_JOSE_PUBLIC,
+    };
     use reqwest::header::CONTENT_TYPE;
 
     //#[ignore = "not now"]
@@ -91,7 +94,7 @@ mod tests {
         let host = "https://mediator.ssi.quest";
         let send_key = generate::<X25519KeyPair>(None);
 
-        let send_priv_key = send_key.private_key_bytes();
+        let _send_priv_key = send_key.private_key_bytes();
         let did_doc = send_key.get_did_document(CONFIG_JOSE_PUBLIC);
         let send_did = did_doc.id.clone();
 

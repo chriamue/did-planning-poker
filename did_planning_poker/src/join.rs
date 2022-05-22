@@ -1,11 +1,6 @@
 // https://github.com/chriamue/did-planning-poker/blob/main/join.md
-use did_key::KeyPair;
-use did_key::{DIDCore, CONFIG_LD_PUBLIC};
-use didcomm_mediator::connections::Connections;
-use didcomm_mediator::handler::{DidcommHandler, HandlerResponse};
 use didcomm_rs::Message;
 use serde_json::json;
-use std::sync::{Arc, Mutex};
 
 #[derive(Default)]
 pub struct JoinResponseBuilder {
@@ -49,12 +44,17 @@ impl JoinResponseBuilder {
             .m_type("https://github.com/chriamue/did-planning-poker/blob/main/join.md#accept")
             .thid(&self.message.as_ref().unwrap().get_didcomm_header().id))
     }
+
+    pub fn build_reject(&mut self) -> Result<Message, &'static str> {
+        Ok(Message::new()
+            .m_type("https://github.com/chriamue/did-planning-poker/blob/main/join.md#reject")
+            .thid(&self.message.as_ref().unwrap().get_didcomm_header().id))
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use did_key::{generate, X25519KeyPair};
 
     #[test]
     fn test_build_join() {
@@ -96,5 +96,31 @@ mod tests {
         );
 
         println!("{}", serde_json::to_string_pretty(&accept).unwrap());
+    }
+
+    #[test]
+    fn test_build_join_reject() {
+        let response = JoinResponseBuilder::new()
+            .session("42".to_string())
+            .alias("alice".to_string())
+            .build_join()
+            .unwrap();
+
+        assert_eq!(
+            response.get_didcomm_header().m_type,
+            "https://github.com/chriamue/did-planning-poker/blob/main/join.md#join"
+        );
+
+        let reject = JoinResponseBuilder::new()
+            .message(response)
+            .build_reject()
+            .unwrap();
+
+        assert_eq!(
+            reject.get_didcomm_header().m_type,
+            "https://github.com/chriamue/did-planning-poker/blob/main/join.md#reject"
+        );
+
+        println!("{}", serde_json::to_string_pretty(&reject).unwrap());
     }
 }

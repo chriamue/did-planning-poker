@@ -21,7 +21,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
 
     let thid = request.get_didcomm_header().id.clone();
 
-    let request = sign_and_encrypt(&request, &did_to, &key);
+    let request = sign_and_encrypt(&request, &did_to, key);
 
     let response = client
         .post(host.clone())
@@ -41,7 +41,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
         .unwrap()
         .from(&did_from);
 
-    let request = sign_and_encrypt(&request, &did_to, &key);
+    let request = sign_and_encrypt(&request, &did_to, key);
 
     let response = client.post(host).json(&request).send().await.unwrap();
 
@@ -58,7 +58,7 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
     for attachment in message.get_attachments() {
         let response_json = attachment.data.json.as_ref().unwrap();
         let received =
-            Message::receive(&response_json, Some(&key.private_key_bytes()), None, None).unwrap();
+            Message::receive(response_json, Some(&key.private_key_bytes()), None, None).unwrap();
         if received.get_didcomm_header().thid == Some(thid.to_string()) {
             pong = true;
         }
