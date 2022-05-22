@@ -5,7 +5,11 @@ use didcomm_mediator::protocols::trustping::TrustPingResponseBuilder;
 use didcomm_rs::Message;
 use instant::Instant;
 
-pub async fn send_ping(key: &KeyPair, did_to: String, host: String) -> Result<String, &'static str> {
+pub async fn send_ping(
+    key: &KeyPair,
+    did_to: String,
+    host: String,
+) -> Result<String, &'static str> {
     let did_doc = key.get_did_document(Default::default());
     let did_from = did_doc.id.to_string();
 

@@ -27,6 +27,20 @@ pub async fn send_ping(private_key: String, did_to: String, host: String) -> Str
 }
 
 #[wasm_bindgen]
+pub async fn send_join(
+    session: String,
+    alias: String,
+    private_key: String,
+    did_to: String,
+    host: String,
+) -> String {
+    let key = key_from_b58(private_key);
+    crate::join::send_join(session, alias, &key, did_to, host)
+        .await
+        .unwrap()
+}
+
+#[wasm_bindgen]
 pub fn did_from_b58(private_key: String) -> String {
     let key = key_from_b58(private_key);
     let did_doc = key.get_did_document(Default::default());

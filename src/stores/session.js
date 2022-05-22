@@ -1,5 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
+import { send_join } from "did_planning_poker";
 import { v4 as uuidv4 } from "uuid";
 import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
@@ -88,6 +89,15 @@ export const useStore = defineStore({
       this.m_host = session.host;
       this.mediator_did = session.mediator_did;
       useIdStore().setAlias(alias);
+      send_join(
+        session.id,
+        alias,
+        useIdStore().key,
+        session.mediator_did,
+        session.host + "/didcomm"
+      )
+        .then((id) => console.log(id))
+        .catch(console.error);
     },
     startHandler() {
       let key = useIdStore().private_key;
@@ -96,6 +106,9 @@ export const useStore = defineStore({
       let handler = new Handler(key, mediator_host, mediator_did);
       handler.on("ping", (value) => {
         usePingStore().receivePong(value.thid);
+      });
+      handler.on("join", (value) => {
+        console.log("joining", value);
       });
       this.m_handler = handler;
       this.m_interval = setInterval(() => {

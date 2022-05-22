@@ -1,4 +1,6 @@
 // https://github.com/chriamue/did-planning-poker/blob/main/join.md
+use did_key::{DIDCore, KeyPair};
+use didcomm_mediator::message::sign_and_encrypt;
 use didcomm_rs::Message;
 use serde_json::json;
 
@@ -50,6 +52,43 @@ impl JoinResponseBuilder {
             .m_type("https://github.com/chriamue/did-planning-poker/blob/main/join.md#reject")
             .thid(&self.message.as_ref().unwrap().get_didcomm_header().id))
     }
+}
+
+pub async fn send_join(
+    session: String,
+    alias: String,
+    key: &KeyPair,
+    did_to: String,
+    host: String,
+) -> Result<String, &'static str> {
+    let did_doc = key.get_did_document(Default::default());
+    let did_from = did_doc.id.to_string();
+
+    let client = reqwest::Client::new();
+
+    let request = JoinResponseBuilder::new()
+        .session(session)
+        .alias(alias)
+        .build_join()
+        .unwrap()
+        .from(&did_from);
+
+    let id = request.get_didcomm_header().id.to_string();
+
+    let request = sign_and_encrypt(&request, &did_to, key);
+
+    let response = client
+        .post(host.clone())
+        .json(&request)
+        .send()
+        .await
+        .unwrap();
+
+    if !response.status().is_success() {
+        println!("{:?}", response.status());
+        return Err("join failed");
+    }
+    Ok(id)
 }
 
 #[cfg(test)]

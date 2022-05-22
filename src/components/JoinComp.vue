@@ -14,7 +14,7 @@ const host = session.host;
 const mediator_did = session.mediator_did;
 const alias = ref("anonymous");
 const joinSession = () => {
-  store.joinSession(props.join, alias);
+  store.joinSession(props.join, alias.value);
   store.startHandler();
 };
 </script>

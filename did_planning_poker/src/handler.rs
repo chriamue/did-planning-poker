@@ -57,12 +57,15 @@ impl Handler {
             assert!(&received.is_ok());
             let message: Message = received.unwrap();
 
-            let messages: Vec<JsMessage> = message.get_attachments().map(|attachment| {
-                let response_json = attachment.data.json.as_ref().unwrap();
-                Message::receive(response_json, Some(&private_key), None, None)
-                    .unwrap()
-                    .into()
-            }).collect();
+            let messages: Vec<JsMessage> = message
+                .get_attachments()
+                .map(|attachment| {
+                    let response_json = attachment.data.json.as_ref().unwrap();
+                    Message::receive(response_json, Some(&private_key), None, None)
+                        .unwrap()
+                        .into()
+                })
+                .collect();
             Ok(JsValue::from_serde(&messages).unwrap())
         })
     }
@@ -85,8 +88,22 @@ impl Handler {
                         }
                         _ => (),
                     }
-                },
-                _ => ()
+                }
+                "https://github.com/chriamue/did-planning-poker/blob/main/join.md#join" => {
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "join",
+                        "id": message.id.to_string(),
+                        "thid": message.thid.as_ref().unwrap().to_string()
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("join") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                }
+                _ => (),
             }
         }
     }
