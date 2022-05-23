@@ -2,6 +2,7 @@ use crate::key_from_b58;
 use base58::ToBase58;
 use did_key::{generate, DIDCore, KeyMaterial, X25519KeyPair};
 use wasm_bindgen::prelude::*;
+use crate::game::Player;
 
 #[wasm_bindgen]
 pub fn init_panic_hook() {
@@ -58,6 +59,22 @@ pub async fn send_join(
 ) -> String {
     let key = key_from_b58(private_key);
     crate::join::send_join(session, alias, &key, did_to, did_mediator, host)
+        .await
+        .unwrap()
+}
+
+#[wasm_bindgen]
+pub async fn send_players(
+    id: String,
+    players: JsValue,
+    private_key: String,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> String {
+    let key = key_from_b58(private_key);
+    let players: Vec<Player> = players.into_serde().unwrap();
+    crate::game::send_players(id, players, &key, did_to, did_mediator, host)
         .await
         .unwrap()
 }

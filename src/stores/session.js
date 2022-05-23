@@ -6,6 +6,7 @@ import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
 import { useStore as usePingStore } from "./ping";
 import { useStore as usePlayersStore } from "./players";
+import { useStore as useSessionStore } from "./session";
 
 export const useStore = defineStore({
   id: "session",
@@ -136,6 +137,12 @@ export const useStore = defineStore({
         usePingStore().receivePong(value.did, value.thid);
         usePlayersStore().updatePing(value.did);
       });
+      handler.on("players", (value) => {
+        if(useSessionStore().did != useIdStore().did) {
+          usePlayersStore().updatePlayers(value.players);
+        }
+        console.log(value);
+      });
       handler.on("join", (value) => {
         let player = {
           did: value.did,
@@ -144,6 +151,7 @@ export const useStore = defineStore({
           voted: "",
         };
         usePlayersStore().addPlayer(player);
+        usePlayersStore().sendPlayers();
         console.log(value, "joined");
       });
       this.m_handler = handler;

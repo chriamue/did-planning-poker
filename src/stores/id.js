@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { generate_private_key } from "did_planning_poker";
+import { did_from_b58, generate_private_key } from "did_planning_poker";
 
 export const useStore = defineStore({
   id: "id",
@@ -15,6 +15,9 @@ export const useStore = defineStore({
      */
     key() {
       return this.private_key;
+    },
+    did() {
+      return did_from_b58(this.private_key);
     },
     alias() {
       return this.m_alias;

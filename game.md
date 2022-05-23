@@ -1,4 +1,4 @@
-# Play Protocol
+# Game Protocol
 
 ## roles
 

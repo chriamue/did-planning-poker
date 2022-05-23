@@ -2,6 +2,7 @@ use base58::FromBase58;
 use did_key::{generate, KeyPair, X25519KeyPair};
 
 pub mod didexchange;
+pub mod game;
 pub mod join;
 pub mod mediation;
 pub mod ping;

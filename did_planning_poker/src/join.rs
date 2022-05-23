@@ -118,6 +118,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .did("did:example".to_string())
             .build_join()
             .unwrap();
 
@@ -134,6 +135,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .did("did:example".to_string())
             .build_join()
             .unwrap();
 
@@ -160,6 +162,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .did("did:example".to_string())
             .build_join()
             .unwrap();
 

@@ -135,6 +135,22 @@ impl Handler {
                         _ => (),
                     }
                 }
+                "https://github.com/chriamue/did-planning-poker/blob/main/game.md#players" => {
+                    let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
+                    let players: Vec<crate::game::Player> = serde_json::from_value(body["players"].clone()).unwrap();
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "players",
+                        "id": body["id"].as_str().unwrap(),
+                        "players": players
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("players") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                }
                 _ => (),
             }
         }
