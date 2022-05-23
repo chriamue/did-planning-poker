@@ -1,10 +1,10 @@
-use crate::jsmessage::JsMessage;
 use crate::key_from_b58;
 use did_key::{DIDCore, KeyMaterial, KeyPair};
 use didcomm_mediator::message::sign_and_encrypt;
 use didcomm_mediator::protocols::messagepickup::MessagePickupResponseBuilder;
 use didcomm_rs::Message;
 use js_sys::Promise;
+use serde_json::Value;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
@@ -57,13 +57,11 @@ impl Handler {
             assert!(&received.is_ok());
             let message: Message = received.unwrap();
 
-            let messages: Vec<JsMessage> = message
+            let messages: Vec<Message> = message
                 .get_attachments()
                 .map(|attachment| {
                     let response_json = attachment.data.json.as_ref().unwrap();
-                    Message::receive(response_json, Some(&private_key), None, None)
-                        .unwrap()
-                        .into()
+                    Message::receive(response_json, Some(&private_key), None, None).unwrap()
                 })
                 .collect();
             Ok(JsValue::from_serde(&messages).unwrap())
@@ -71,15 +69,28 @@ impl Handler {
     }
 
     pub fn handle(&self, message: &JsValue) {
-        let messages: Vec<JsMessage> = message.into_serde().unwrap();
+        let messages: Vec<Message> = message.into_serde().unwrap();
         let this = JsValue::null();
         for message in &messages {
-            match message.m_type.as_str() {
+            match message.get_didcomm_header().m_type.as_str() {
+                "https://didcomm.org/routing/2.0/forward" => {
+                    for attachment in message.get_attachments() {
+                        let forwared_json = attachment.data.json.as_ref().unwrap();
+                        let forwarded = Message::receive(
+                            &forwared_json,
+                            Some(&self.key.private_key_bytes()),
+                            None,
+                            None,
+                        )
+                        .unwrap();
+                        self.handle(&JsValue::from_serde(&vec![forwarded]).unwrap())
+                    }
+                }
                 "https://didcomm.org/trust-ping/2.0/ping-response" => {
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "ping-response",
-                        "id": message.id.to_string(),
-                        "thid": message.thid.as_ref().unwrap().to_string()
+                        "id": message.get_didcomm_header().id.to_string(),
+                        "thid": message.get_didcomm_header().thid.as_ref().unwrap().to_string()
                     }))
                     .unwrap();
                     match self.callbacks.get("ping") {
@@ -90,10 +101,11 @@ impl Handler {
                     }
                 }
                 "https://github.com/chriamue/did-planning-poker/blob/main/join.md#join" => {
+                    let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "join",
-                        "id": message.id.to_string(),
-                        "thid": message.thid.as_ref().unwrap().to_string()
+                        "id": body["id"].as_str().unwrap(),
+                        "alias": body["alias"].as_str().unwrap()
                     }))
                     .unwrap();
                     match self.callbacks.get("join") {
