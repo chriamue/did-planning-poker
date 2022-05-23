@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { send_join, send_pong } from "did_planning_poker";
+import { send_join } from "did_planning_poker";
 import { v4 as uuidv4 } from "uuid";
 import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
@@ -71,8 +71,9 @@ export const useStore = defineStore({
         mediator_did: this.m_mediator_did,
       };
       let session_json = JSON.stringify(session);
-      return `${window.location.protocol}//${window.location.host}${window.location.pathname
-        }?join=${btoa(session_json)}`;
+      return `${window.location.protocol}//${window.location.host}${
+        window.location.pathname
+      }?join=${btoa(session_json)}`;
     },
   },
   actions: {
@@ -85,7 +86,7 @@ export const useStore = defineStore({
         did: did_from_b58(useIdStore().key),
         alias,
         ping: performance.now(),
-        voted: false
+        voted: "",
       });
       this.m_host = mediator_host;
       return fetch(`${mediator_host}/invitation`)
@@ -103,7 +104,7 @@ export const useStore = defineStore({
         did: did_from_b58(useIdStore().key),
         alias,
         ping: performance.now(),
-        voted: false
+        voted: "",
       });
       let session = JSON.parse(atob(joinParameter));
       this.m_id = session.id;
@@ -140,8 +141,8 @@ export const useStore = defineStore({
           did: value.did,
           alias: value.alias,
           ping: performance.now(),
-          voted: false
-        }
+          voted: "",
+        };
         usePlayersStore().addPlayer(player);
         console.log(value, "joined");
       });

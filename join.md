@@ -17,6 +17,7 @@ Hosts accept clients join message.
   "from": "did:example:client",
   "to": ["did:example:host"],
   "body": {
+    "did": "did:example:client",
     "id": "<SessionId>",
     "alias": "<ClientName>",
   }
@@ -34,7 +35,7 @@ alias: Name, the Client wants visible for others
 ```json
 {
   "id": "2345678901",
-  "thid": "1234567890"
+  "thid": "1234567890",
   "type": "https://github.com/chriamue/did-planning-poker/blob/main/join.md#accept",
   "from": "did:example:host",
   "to": ["did:example:client"],
@@ -50,7 +51,7 @@ Join request was accepted and host will inform client about updates.
 ```json
 {
   "id": "2345678901",
-  "thid": "1234567890"
+  "thid": "1234567890",
   "type": "https://github.com/chriamue/did-planning-poker/blob/main/join.md#reject",
   "from": "did:example:host",
   "to": ["did:example:client"],

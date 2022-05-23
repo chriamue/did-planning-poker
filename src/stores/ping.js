@@ -24,7 +24,12 @@ export const useStore = defineStore({
      * send ping
      */
     sendPing() {
-      send_ping(useIdStore().key, useSessionStore().did, useSessionStore().mediator_did, `${useSessionStore().host}/didcomm`)
+      send_ping(
+        useIdStore().key,
+        useSessionStore().did,
+        useSessionStore().mediator_did,
+        `${useSessionStore().host}/didcomm`
+      )
         .then((id) => this.timestamps.set(id, performance.now()))
         .catch(console.error);
     },
@@ -33,11 +38,15 @@ export const useStore = defineStore({
      * send ping
      * @param {string} did
      * @param {string} thid
-    */
+     */
     sendPong(did, thid) {
-      send_pong(thid, useIdStore().key, did, useSessionStore().mediator_did, `${useSessionStore().host}/didcomm`)
-        .then((id) => { })
-        .catch(console.error);
+      send_pong(
+        thid,
+        useIdStore().key,
+        did,
+        useSessionStore().mediator_did,
+        `${useSessionStore().host}/didcomm`
+      ).catch(console.error);
     },
 
     /**

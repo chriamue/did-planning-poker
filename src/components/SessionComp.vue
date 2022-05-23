@@ -29,7 +29,7 @@ const newSession = () => {
     <player-list />
   </div>
   <div class="session form-group" v-else>
-        <label for="alias_input">Alias</label>
+    <label for="alias_input">Alias</label>
     <input id="alias_input" type="text" v-model="alias" />
     <label for="host_input">Host Url</label>
     <input id="host_input" type="text" v-model="host" />
