@@ -21,9 +21,30 @@ pub async fn ping(private_key: String, did_to: String, host: String) -> u32 {
 }
 
 #[wasm_bindgen]
-pub async fn send_ping(private_key: String, did_to: String, host: String) -> String {
+pub async fn send_ping(
+    private_key: String,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> String {
     let key = key_from_b58(private_key);
-    crate::ping::send_ping(&key, did_to, host).await.unwrap()
+    crate::ping::send_ping(&key, did_to, did_mediator, host)
+        .await
+        .unwrap()
+}
+
+#[wasm_bindgen]
+pub async fn send_pong(
+    thid: String,
+    private_key: String,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> String {
+    let key = key_from_b58(private_key);
+    crate::ping::send_pong(thid, &key, did_to, did_mediator, host)
+        .await
+        .unwrap()
 }
 
 #[wasm_bindgen]

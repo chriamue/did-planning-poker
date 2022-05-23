@@ -1,10 +1,11 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { send_join } from "did_planning_poker";
+import { send_join, send_pong } from "did_planning_poker";
 import { v4 as uuidv4 } from "uuid";
 import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
 import { useStore as usePingStore } from "./ping";
+import { useStore as usePlayersStore } from "./players";
 
 export const useStore = defineStore({
   id: "session",
@@ -70,9 +71,8 @@ export const useStore = defineStore({
         mediator_did: this.m_mediator_did,
       };
       let session_json = JSON.stringify(session);
-      return `${window.location.protocol}//${window.location.host}${
-        window.location.pathname
-      }?join=${btoa(session_json)}`;
+      return `${window.location.protocol}//${window.location.host}${window.location.pathname
+        }?join=${btoa(session_json)}`;
     },
   },
   actions: {
@@ -80,7 +80,13 @@ export const useStore = defineStore({
      * generate new session
      * @param {string} mediator_host
      */
-    newSession(mediator_host) {
+    newSession(alias, mediator_host) {
+      usePlayersStore().addPlayer({
+        did: did_from_b58(useIdStore().key),
+        alias,
+        ping: performance.now(),
+        voted: false
+      });
       this.m_host = mediator_host;
       return fetch(`${mediator_host}/invitation`)
         .then(async (r) => (await r.json()).invitation)
@@ -93,9 +99,16 @@ export const useStore = defineStore({
         });
     },
     joinSession(joinParameter, alias) {
+      usePlayersStore().addPlayer({
+        did: did_from_b58(useIdStore().key),
+        alias,
+        ping: performance.now(),
+        voted: false
+      });
       let session = JSON.parse(atob(joinParameter));
       this.m_id = session.id;
       this.m_host = session.host;
+      this.m_did = session.did;
       this.m_mediator_did = session.mediator_did;
       useIdStore().setAlias(alias);
       send_join(
@@ -115,10 +128,22 @@ export const useStore = defineStore({
       let mediator_did = this.m_mediator_did;
       let handler = new Handler(key, mediator_host, mediator_did);
       handler.on("ping", (value) => {
-        usePingStore().receivePong(value.thid);
+        usePingStore().sendPong(value.did, value.id);
+        usePlayersStore().updatePing(value.did);
+      });
+      handler.on("ping-response", (value) => {
+        usePingStore().receivePong(value.did, value.thid);
+        usePlayersStore().updatePing(value.did);
       });
       handler.on("join", (value) => {
-        console.log("joining", value);
+        let player = {
+          did: value.did,
+          alias: value.alias,
+          ping: performance.now(),
+          voted: false
+        }
+        usePlayersStore().addPlayer(player);
+        console.log(value, "joined");
       });
       this.m_handler = handler;
       this.m_interval = setInterval(() => {

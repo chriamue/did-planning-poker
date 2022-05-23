@@ -1,8 +1,9 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { send_ping } from "did_planning_poker";
+import { send_ping, send_pong } from "did_planning_poker";
 
 import { useStore as useIdStore } from "./id";
+import { useStore as useSessionStore } from "./session";
 
 export const useStore = defineStore({
   id: "ping",
@@ -22,9 +23,20 @@ export const useStore = defineStore({
     /**
      * send ping
      */
-    sendPing(did, host) {
-      send_ping(useIdStore().key, did, host)
+    sendPing() {
+      send_ping(useIdStore().key, useSessionStore().did, useSessionStore().mediator_did, `${useSessionStore().host}/didcomm`)
         .then((id) => this.timestamps.set(id, performance.now()))
+        .catch(console.error);
+    },
+
+    /**
+     * send ping
+     * @param {string} did
+     * @param {string} thid
+    */
+    sendPong(did, thid) {
+      send_pong(thid, useIdStore().key, did, useSessionStore().mediator_did, `${useSessionStore().host}/didcomm`)
+        .then((id) => { })
         .catch(console.error);
     },
 
@@ -32,7 +44,7 @@ export const useStore = defineStore({
      * update ping response
      * @param {string} thid
      */
-    receivePong(thid) {
+    receivePong(did, thid) {
       let timestamp = this.timestamps.get(thid);
       if (timestamp) {
         let now = performance.now();

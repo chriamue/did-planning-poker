@@ -68,16 +68,16 @@ impl Handler {
         })
     }
 
-    pub fn handle(&self, message: &JsValue) {
-        let messages: Vec<Message> = message.into_serde().unwrap();
+    pub fn handle(&self, messages: &JsValue) {
+        let messages: Vec<Message> = messages.into_serde().unwrap();
         let this = JsValue::null();
         for message in &messages {
             match message.get_didcomm_header().m_type.as_str() {
                 "https://didcomm.org/routing/2.0/forward" => {
                     for attachment in message.get_attachments() {
-                        let forwared_json = attachment.data.json.as_ref().unwrap();
+                        let forwarded_json = attachment.data.json.as_ref().unwrap();
                         let forwarded = Message::receive(
-                            &forwared_json,
+                            &forwarded_json,
                             Some(&self.key.private_key_bytes()),
                             None,
                             None,
@@ -89,8 +89,25 @@ impl Handler {
                 "https://didcomm.org/trust-ping/2.0/ping-response" => {
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "ping-response",
+                        "did": message.get_didcomm_header().from.as_ref().unwrap(),
+                        "to": message.get_didcomm_header().to,
                         "id": message.get_didcomm_header().id.to_string(),
                         "thid": message.get_didcomm_header().thid.as_ref().unwrap().to_string()
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("ping-response") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                }
+                "https://didcomm.org/trust-ping/2.0/ping" => {
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "ping",
+                        "did": message.get_didcomm_header().from.as_ref().unwrap(),
+                        "to": message.get_didcomm_header().to,
+                        "id": message.get_didcomm_header().id.to_string(),
                     }))
                     .unwrap();
                     match self.callbacks.get("ping") {
@@ -104,8 +121,11 @@ impl Handler {
                     let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "join",
+                        "from": message.get_didcomm_header().from.as_ref().unwrap(),
+                        "to": message.get_didcomm_header().to,
                         "id": body["id"].as_str().unwrap(),
-                        "alias": body["alias"].as_str().unwrap()
+                        "alias": body["alias"].as_str().unwrap(),
+                        "did": body["did"].as_str().unwrap(),
                     }))
                     .unwrap();
                     match self.callbacks.get("join") {

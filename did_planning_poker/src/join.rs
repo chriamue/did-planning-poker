@@ -9,12 +9,14 @@ use serde_json::json;
 pub struct JoinResponseBuilder {
     session: Option<String>,
     alias: Option<String>,
+    did: Option<String>,
     message: Option<Message>,
 }
 
 impl JoinResponseBuilder {
     pub fn new() -> Self {
         JoinResponseBuilder {
+            did: None,
             session: None,
             alias: None,
             message: None,
@@ -23,6 +25,11 @@ impl JoinResponseBuilder {
 
     pub fn session(&mut self, session: String) -> &mut Self {
         self.session = Some(session);
+        self
+    }
+
+    pub fn did(&mut self, did: String) -> &mut Self {
+        self.did = Some(did);
         self
     }
 
@@ -39,7 +46,11 @@ impl JoinResponseBuilder {
     pub fn build_join(&mut self) -> Result<Message, &'static str> {
         Ok(Message::new()
             .m_type("https://github.com/chriamue/did-planning-poker/blob/main/join.md#join")
-            .body(&json!({"id": self.session.as_ref().unwrap(), "alias": self.alias.as_ref().unwrap()}).to_string()))
+            .body(
+                &json!(
+                {"id": self.session.as_ref().unwrap(), "alias": self.alias.as_ref().unwrap(),"did": self.did.as_ref().unwrap()})
+                .to_string(),
+            ))
     }
 
     pub fn build_accept(&mut self) -> Result<Message, &'static str> {
@@ -71,6 +82,7 @@ pub async fn send_join(
     let request = JoinResponseBuilder::new()
         .session(session)
         .alias(alias)
+        .did(did_from.to_string())
         .build_join()
         .unwrap()
         .from(&did_from);

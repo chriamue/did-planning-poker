@@ -1,5 +1,6 @@
 use did_key::*;
 use didcomm_mediator::message::sign_and_encrypt;
+use didcomm_mediator::protocols::forward::ForwardBuilder;
 use didcomm_mediator::protocols::messagepickup::MessagePickupResponseBuilder;
 use didcomm_mediator::protocols::trustping::TrustPingResponseBuilder;
 use didcomm_rs::Message;
@@ -8,6 +9,7 @@ use instant::Instant;
 pub async fn send_ping(
     key: &KeyPair,
     did_to: String,
+    did_mediator: String,
     host: String,
 ) -> Result<String, &'static str> {
     let did_doc = key.get_did_document(Default::default());
@@ -21,9 +23,14 @@ pub async fn send_ping(
         .from(&did_from);
 
     let id = request.get_didcomm_header().id.to_string();
-
     let request = sign_and_encrypt(&request, &did_to, key);
 
+    let request = ForwardBuilder::new()
+        .message(serde_json::to_string(&request).unwrap())
+        .did(did_to)
+        .build()
+        .unwrap();
+    let request = sign_and_encrypt(&request, &did_mediator, key);
     let response = client
         .post(host.clone())
         .json(&request)
@@ -34,6 +41,47 @@ pub async fn send_ping(
     if !response.status().is_success() {
         println!("{:?}", response.status());
         return Err("ping failed");
+    }
+    Ok(id)
+}
+
+pub async fn send_pong(
+    thid: String,
+    key: &KeyPair,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> Result<String, &'static str> {
+    let did_doc = key.get_did_document(Default::default());
+    let did_from = did_doc.id.to_string();
+
+    let client = reqwest::Client::new();
+
+    let request = TrustPingResponseBuilder::new()
+        .thid(thid)
+        .build_response()
+        .unwrap()
+        .from(&did_from);
+
+    let id = request.get_didcomm_header().id.to_string();
+    let request = sign_and_encrypt(&request, &did_to, key);
+
+    let request = ForwardBuilder::new()
+        .message(serde_json::to_string(&request).unwrap())
+        .did(did_to)
+        .build()
+        .unwrap();
+    let request = sign_and_encrypt(&request, &did_mediator, key);
+    let response = client
+        .post(host.clone())
+        .json(&request)
+        .send()
+        .await
+        .unwrap();
+
+    if !response.status().is_success() {
+        println!("{:?}", response.status());
+        return Err("pong failed");
     }
     Ok(id)
 }
