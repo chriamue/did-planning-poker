@@ -154,8 +154,7 @@ impl Handler {
                 }
                 "https://github.com/chriamue/did-planning-poker/blob/main/game.md#cards" => {
                     let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
-                    let cards: Vec<String> =
-                        serde_json::from_value(body["cards"].clone()).unwrap();
+                    let cards: Vec<String> = serde_json::from_value(body["cards"].clone()).unwrap();
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "cards",
                         "id": body["id"].as_str().unwrap(),
@@ -163,6 +162,22 @@ impl Handler {
                     }))
                     .unwrap();
                     match self.callbacks.get("cards") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                }
+                "https://github.com/chriamue/did-planning-poker/blob/main/game.md#vote" => {
+                    let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "cards",
+                        "id": body["id"].as_str().unwrap(),
+                        "did": body["did"].as_str().unwrap(),
+                        "vote": body["vote"].as_str().unwrap(),
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("vote") {
                         Some(f) => {
                             f.call1(&this, &value).unwrap();
                         }

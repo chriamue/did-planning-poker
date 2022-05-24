@@ -153,6 +153,10 @@ export const useStore = defineStore({
           this.setCards(value.cards);
         }
       });
+      handler.on("vote", (value) => {
+        usePlayersStore().setVote(value.did, value.vote);
+        usePlayersStore().sendPlayers();
+      });
       handler.on("join", (value) => {
         let player = {
           did: value.did,

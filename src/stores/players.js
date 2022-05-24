@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { send_players } from "did_planning_poker";
+import { send_players, send_vote } from "did_planning_poker";
 
 import { useStore as useIdStore } from "./id";
 import { useStore as useSessionStore } from "./session";
@@ -54,6 +54,23 @@ export const useStore = defineStore({
         console.error(error);
       }
     },
+    /**
+     * Remove player
+     * @param {string} did
+     * @param {string} vote
+     */
+    setVote(did, vote) {
+      try {
+        const i = this.rawItems
+          .map(function (x) {
+            return x.did;
+          })
+          .indexOf(did);
+        this.rawItems[i].voted = vote;
+      } catch (error) {
+        console.error(error);
+      }
+    },
 
     /**
      * Remove player
@@ -92,6 +109,19 @@ export const useStore = defineStore({
           `${useSessionStore().host}/didcomm`
         ).catch(console.error);
       });
+    },
+    /**
+     * send Players
+     */
+    sendVote(vote) {
+      send_vote(
+        useSessionStore().id,
+        vote,
+        useIdStore().key,
+        useSessionStore().did,
+        useSessionStore().mediator_did,
+        `${useSessionStore().host}/didcomm`
+      ).catch(console.error);
     },
   },
 });
