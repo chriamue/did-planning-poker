@@ -12,4 +12,10 @@ const interval = setInterval(async () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.ping {
+  position: fixed;
+  top: 20px;
+  right: 40px;
+}
+</style>

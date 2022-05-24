@@ -28,4 +28,7 @@ const vote = (card) => {
 .card-list {
   display: flex;
 }
+.card {
+  margin: 10px;
+}
 </style>

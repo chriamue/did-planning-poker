@@ -50,6 +50,9 @@ const voted = (player) => {
 .player-list {
   display: flex;
 }
+.card {
+  margin: 5px;
+}
 .voted {
   text-align: center;
   font-size: xx-large;
