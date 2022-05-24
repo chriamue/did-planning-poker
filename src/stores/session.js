@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { send_join } from "did_planning_poker";
+import { send_join, send_cards } from "did_planning_poker";
 import { v4 as uuidv4 } from "uuid";
 import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
@@ -25,6 +25,7 @@ export const useStore = defineStore({
     m_host: "",
     m_handler: undefined,
     m_interval: undefined,
+    m_cards: [],
   }),
   getters: {
     /**
@@ -76,13 +77,17 @@ export const useStore = defineStore({
         window.location.pathname
       }?join=${btoa(session_json)}`;
     },
+    cards() {
+      return this.m_cards;
+    },
   },
   actions: {
     /**
      * generate new session
      * @param {string} mediator_host
      */
-    newSession(alias, mediator_host) {
+    newSession(alias, cards, mediator_host) {
+      this.m_cards = cards;
       usePlayersStore().addPlayer({
         did: did_from_b58(useIdStore().key),
         alias,
@@ -138,10 +143,15 @@ export const useStore = defineStore({
         usePlayersStore().updatePing(value.did);
       });
       handler.on("players", (value) => {
-        if(useSessionStore().did != useIdStore().did) {
+        if (useSessionStore().did != useIdStore().did) {
           usePlayersStore().updatePlayers(value.players);
         }
         console.log(value);
+      });
+      handler.on("cards", (value) => {
+        if (useSessionStore().did != useIdStore().did) {
+          this.setCards(value.cards);
+        }
       });
       handler.on("join", (value) => {
         let player = {
@@ -152,6 +162,7 @@ export const useStore = defineStore({
         };
         usePlayersStore().addPlayer(player);
         usePlayersStore().sendPlayers();
+        this.sendCards(value.did);
         console.log(value, "joined");
       });
       this.m_handler = handler;
@@ -164,6 +175,19 @@ export const useStore = defineStore({
         clearInterval(this.m_interval);
         this.m_interval = undefined;
       }
+    },
+    setCards(cards) {
+      this.m_cards = cards;
+    },
+    sendCards(did) {
+      send_cards(
+        useSessionStore().id,
+        this.cards,
+        useIdStore().key,
+        did,
+        useSessionStore().mediator_did,
+        `${useSessionStore().host}/didcomm`
+      ).catch(console.error);
     },
   },
 });

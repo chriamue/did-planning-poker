@@ -21,11 +21,16 @@ const ping = (ping) => {
         <p>
           {{ player.did }}
         </p>
-        <p></p>
-        {{ ping(player.ping) }}
+        <p>
+          {{ ping(player.ping) }}
+        </p>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.player-list {
+  display: flex;
+}
+</style>

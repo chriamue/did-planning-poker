@@ -16,6 +16,7 @@ pub struct Player {
 
 #[derive(Default)]
 pub struct GameResponseBuilder {
+    cards: Option<Vec<String>>,
     id: Option<String>,
     players: Option<Vec<Player>>,
 }
@@ -23,11 +24,16 @@ pub struct GameResponseBuilder {
 impl GameResponseBuilder {
     pub fn new() -> Self {
         GameResponseBuilder {
+            cards: None,
             id: None,
             players: None,
         }
     }
 
+    pub fn cards(&mut self, cards: Vec<String>) -> &mut Self {
+        self.cards = Some(cards);
+        self
+    }
     pub fn id(&mut self, id: String) -> &mut Self {
         self.id = Some(id);
         self
@@ -43,6 +49,15 @@ impl GameResponseBuilder {
             .body(
                 &json!(
                 {"id": self.id.as_ref().unwrap(), "players": self.players.as_ref().unwrap()})
+                .to_string(),
+            ))
+    }
+    pub fn build_cards(&mut self) -> Result<Message, &'static str> {
+        Ok(Message::new()
+            .m_type("https://github.com/chriamue/did-planning-poker/blob/main/game.md#cards")
+            .body(
+                &json!(
+                {"id": self.id.as_ref().unwrap(), "cards": self.cards.as_ref().unwrap()})
                 .to_string(),
             ))
     }
@@ -86,6 +101,44 @@ pub async fn send_players(
     Ok(id)
 }
 
+pub async fn send_cards(
+    id: String,
+    cards: Vec<String>,
+    key: &KeyPair,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> Result<String, &'static str> {
+    let client = reqwest::Client::new();
+
+    let request = GameResponseBuilder::new()
+        .id(id)
+        .cards(cards)
+        .build_cards()
+        .unwrap();
+    let id = request.get_didcomm_header().id.to_string();
+    let request = sign_and_encrypt(&request, &did_to, key);
+
+    let request = ForwardBuilder::new()
+        .message(serde_json::to_string(&request).unwrap())
+        .did(did_to)
+        .build()
+        .unwrap();
+    let request = sign_and_encrypt(&request, &did_mediator, key);
+    let response = client
+        .post(host.clone())
+        .json(&request)
+        .send()
+        .await
+        .unwrap();
+
+    if !response.status().is_success() {
+        println!("{:?}", response.status());
+        return Err("cards failed");
+    }
+    Ok(id)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -101,6 +154,22 @@ mod tests {
         assert_eq!(
             response.get_didcomm_header().m_type,
             "https://github.com/chriamue/did-planning-poker/blob/main/game.md#players"
+        );
+
+        println!("{}", serde_json::to_string_pretty(&response).unwrap());
+    }
+
+    #[test]
+    fn test_build_cards() {
+        let response = GameResponseBuilder::new()
+            .id("42".to_string())
+            .cards(Vec::new())
+            .build_cards()
+            .unwrap();
+
+        assert_eq!(
+            response.get_didcomm_header().m_type,
+            "https://github.com/chriamue/did-planning-poker/blob/main/game.md#cards"
         );
 
         println!("{}", serde_json::to_string_pretty(&response).unwrap());

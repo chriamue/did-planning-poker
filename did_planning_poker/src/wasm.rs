@@ -80,6 +80,22 @@ pub async fn send_players(
 }
 
 #[wasm_bindgen]
+pub async fn send_cards(
+    id: String,
+    cards: JsValue,
+    private_key: String,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> String {
+    let key = key_from_b58(private_key);
+    let cards: Vec<String> = cards.into_serde().unwrap();
+    crate::game::send_cards(id, cards, &key, did_to, did_mediator, host)
+        .await
+        .unwrap()
+}
+
+#[wasm_bindgen]
 pub fn did_from_b58(private_key: String) -> String {
     let key = key_from_b58(private_key);
     let did_doc = key.get_did_document(Default::default());

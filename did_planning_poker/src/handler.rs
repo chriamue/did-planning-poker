@@ -36,7 +36,7 @@ impl Handler {
     pub fn next(&self) -> Promise {
         let client = reqwest::Client::new();
         let request = MessagePickupResponseBuilder::new()
-            .batch_size(2)
+            .batch_size(5)
             .build_batch_pickup()
             .unwrap()
             .from(&self.did);
@@ -137,7 +137,8 @@ impl Handler {
                 }
                 "https://github.com/chriamue/did-planning-poker/blob/main/game.md#players" => {
                     let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
-                    let players: Vec<crate::game::Player> = serde_json::from_value(body["players"].clone()).unwrap();
+                    let players: Vec<crate::game::Player> =
+                        serde_json::from_value(body["players"].clone()).unwrap();
                     let value = JsValue::from_serde(&serde_json::json!({
                         "type": "players",
                         "id": body["id"].as_str().unwrap(),
@@ -145,6 +146,23 @@ impl Handler {
                     }))
                     .unwrap();
                     match self.callbacks.get("players") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
+                }
+                "https://github.com/chriamue/did-planning-poker/blob/main/game.md#cards" => {
+                    let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
+                    let cards: Vec<String> =
+                        serde_json::from_value(body["cards"].clone()).unwrap();
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "cards",
+                        "id": body["id"].as_str().unwrap(),
+                        "cards": cards
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("cards") {
                         Some(f) => {
                             f.call1(&this, &value).unwrap();
                         }

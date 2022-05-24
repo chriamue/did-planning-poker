@@ -42,6 +42,27 @@ ping: ping of the player the host measured
 
 voted: last vote
 
+## cards
+
+```json
+{
+  "id": "2345678901",
+  "type": "https://github.com/chriamue/did-planning-poker/blob/main/game.md#cards",
+  "from": "did:example:host",
+  "to": ["did:example:client"],
+  "body": {
+    "id": "<SessionId>",
+    "cards": ["<card>"]
+  }
+}
+```
+
+### cards body
+
+id: Session Id from an invitation.
+
+cards: array of available cards for voting.
+
 ## vote
 
 ```json
