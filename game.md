@@ -82,3 +82,24 @@ cards: array of available cards for voting.
 ### vote body
 
 id: Session Id from an invitation.
+vote: the voted card
+
+## reveal
+
+```json
+{
+  "id": "2345678901",
+  "type": "https://github.com/chriamue/did-planning-poker/blob/main/game.md#reveal",
+  "from": "did:example:host",
+  "to": ["did:example:client"],
+  "body": {
+    "id": "<SessionId>",
+    "reveal": "<boolean>"
+  }
+}
+```
+
+### reveal body
+
+id: Session Id from an invitation.
+reveal: hide cards if false, show cards if true

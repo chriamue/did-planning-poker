@@ -183,6 +183,21 @@ impl Handler {
                         }
                         _ => (),
                     }
+                },
+                "https://github.com/chriamue/did-planning-poker/blob/main/game.md#reveal" => {
+                    let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
+                    let value = JsValue::from_serde(&serde_json::json!({
+                        "type": "cards",
+                        "id": body["id"].as_str().unwrap(),
+                        "reveal": body["reveal"].as_bool().unwrap()
+                    }))
+                    .unwrap();
+                    match self.callbacks.get("reveal") {
+                        Some(f) => {
+                            f.call1(&this, &value).unwrap();
+                        }
+                        _ => (),
+                    }
                 }
                 _ => (),
             }

@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore } from "pinia";
-import { send_join, send_cards } from "did_planning_poker";
+import { send_join, send_cards, send_reveal } from "did_planning_poker";
 import { v4 as uuidv4 } from "uuid";
 import { did_from_b58, Handler } from "did_planning_poker";
 import { useStore as useIdStore } from "./id";
@@ -26,6 +26,7 @@ export const useStore = defineStore({
     m_handler: undefined,
     m_interval: undefined,
     m_cards: [],
+    m_reveal: false,
   }),
   getters: {
     /**
@@ -79,6 +80,9 @@ export const useStore = defineStore({
     },
     cards() {
       return this.m_cards;
+    },
+    reveal() {
+      return this.m_reveal;
     },
   },
   actions: {
@@ -157,6 +161,9 @@ export const useStore = defineStore({
         usePlayersStore().setVote(value.did, value.vote);
         usePlayersStore().sendPlayers();
       });
+      handler.on("reveal", (value) => {
+        this.setReveal(value.reveal);
+      });
       handler.on("join", (value) => {
         let player = {
           did: value.did,
@@ -183,6 +190,9 @@ export const useStore = defineStore({
     setCards(cards) {
       this.m_cards = cards;
     },
+    setReveal(reveal) {
+      this.m_reveal = reveal;
+    },
     sendCards(did) {
       send_cards(
         useSessionStore().id,
@@ -192,6 +202,21 @@ export const useStore = defineStore({
         useSessionStore().mediator_did,
         `${useSessionStore().host}/didcomm`
       ).catch(console.error);
+    },
+    /**
+     * send Reveal
+     */
+    sendReveal() {
+      usePlayersStore().players.forEach((player) => {
+        send_reveal(
+          useSessionStore().id,
+          this.m_reveal,
+          useIdStore().key,
+          player.did,
+          useSessionStore().mediator_did,
+          `${useSessionStore().host}/didcomm`
+        ).catch(console.error);
+      });
     },
   },
 });

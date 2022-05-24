@@ -21,6 +21,7 @@ pub struct GameResponseBuilder {
     id: Option<String>,
     players: Option<Vec<Player>>,
     vote: Option<String>,
+    reveal: Option<bool>,
 }
 
 impl GameResponseBuilder {
@@ -31,6 +32,7 @@ impl GameResponseBuilder {
             id: None,
             players: None,
             vote: None,
+            reveal: None,
         }
     }
 
@@ -52,6 +54,10 @@ impl GameResponseBuilder {
     }
     pub fn vote(&mut self, vote: String) -> &mut Self {
         self.vote = Some(vote);
+        self
+    }
+    pub fn reveal(&mut self, reveal: bool) -> &mut Self {
+        self.reveal = Some(reveal);
         self
     }
 
@@ -79,6 +85,15 @@ impl GameResponseBuilder {
             .body(
                 &json!(
                 {"id": self.id.as_ref().unwrap(), "did": self.did.as_ref().unwrap(), "vote": self.vote.as_ref().unwrap()})
+                .to_string(),
+            ))
+    }
+    pub fn build_reveal(&mut self) -> Result<Message, &'static str> {
+        Ok(Message::new()
+            .m_type("https://github.com/chriamue/did-planning-poker/blob/main/game.md#reveal")
+            .body(
+                &json!(
+                {"id": self.id.as_ref().unwrap(), "reveal": self.reveal.as_ref().unwrap()})
                 .to_string(),
             ))
     }
@@ -197,6 +212,44 @@ pub async fn send_vote(
     if !response.status().is_success() {
         println!("{:?}", response.status());
         return Err("vote failed");
+    }
+    Ok(id)
+}
+
+pub async fn send_reveal(
+    id: String,
+    reveal: bool,
+    key: &KeyPair,
+    did_to: String,
+    did_mediator: String,
+    host: String,
+) -> Result<String, &'static str> {
+    let client = reqwest::Client::new();
+
+    let request = GameResponseBuilder::new()
+        .id(id)
+        .reveal(reveal)
+        .build_reveal()
+        .unwrap();
+    let id = request.get_didcomm_header().id.to_string();
+    let request = sign_and_encrypt(&request, &did_to, key);
+
+    let request = ForwardBuilder::new()
+        .message(serde_json::to_string(&request).unwrap())
+        .did(did_to)
+        .build()
+        .unwrap();
+    let request = sign_and_encrypt(&request, &did_mediator, key);
+    let response = client
+        .post(host.clone())
+        .json(&request)
+        .send()
+        .await
+        .unwrap();
+
+    if !response.status().is_success() {
+        println!("{:?}", response.status());
+        return Err("reveal failed");
     }
     Ok(id)
 }

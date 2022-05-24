@@ -7,12 +7,12 @@ import { useStore as useSessionStore } from "./session";
 export const useStore = defineStore({
   id: "players",
   state: () => ({
-    /** @type {object[]} */
+    /** @type {Array<{ did: string; alias: string, ping: number, voted: string }>} */
     rawItems: [],
   }),
   getters: {
     /**
-     * @returns {{ did: string; alias: string, ping: number, voted: string }}
+     * @returns {Array<{ did: string; alias: string, ping: number, voted: string }>}
      */
     players: (state) => state.rawItems,
   },

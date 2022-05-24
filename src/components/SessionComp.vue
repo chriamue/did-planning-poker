@@ -14,6 +14,10 @@ const newSession = () => {
     .newSession(alias, cards.value.split(","), host)
     .then(() => store.startHandler());
 };
+const reveal = () => {
+  store.setReveal(!store.reveal);
+  store.sendReveal();
+};
 </script>
 
 <template>
@@ -31,6 +35,9 @@ const newSession = () => {
       Session Details
     </button>
     <player-list />
+    <button type="button" class="btn btn-secondary" @click="reveal">
+      Reveal or Hide
+    </button>
     <card-list />
   </div>
   <div class="session form-group" v-else>

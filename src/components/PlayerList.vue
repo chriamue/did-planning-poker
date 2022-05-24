@@ -1,10 +1,20 @@
 <script setup>
 import { ref } from "vue";
 import { useStore } from "@/stores/players";
+import { useStore as useSessionStore } from "@/stores/session";
+import { useStore as useIdStore } from "@/stores/id";
 const store = useStore();
+const sessionStore = useSessionStore();
 const details = ref(false);
 const ping = (ping) => {
   return Math.floor(performance.now() - ping);
+};
+const voted = (player) => {
+  return player.did == useIdStore().did
+    ? player.voted
+    : sessionStore.reveal
+    ? player.voted
+    : "?";
 };
 </script>
 
@@ -29,7 +39,7 @@ const ping = (ping) => {
           </p>
         </div>
         <p class="voted">
-          {{ player.voted }}
+          {{ voted(player) }}
         </p>
       </div>
     </div>
