@@ -8,13 +8,13 @@ export const useStore = defineStore({
   id: "players",
   state: () => ({
     /** @type {Array<{ did: string; alias: string, ping: number, voted: string }>} */
-    rawItems: [],
+    m_players: [],
   }),
   getters: {
     /**
      * @returns {Array<{ did: string; alias: string, ping: number, voted: string }>}
      */
-    players: (state) => state.rawItems,
+    players: (state) => state.m_players,
   },
   actions: {
     /**
@@ -22,7 +22,7 @@ export const useStore = defineStore({
      * @param {{ did: string; alias: string, ping: number, voted: string }} player
      */
     addPlayer(player) {
-      this.rawItems.push(player);
+      this.m_players.push(player);
     },
 
     /**
@@ -30,12 +30,12 @@ export const useStore = defineStore({
      * @param {string} did
      */
     removePlayer(did) {
-      const i = this.rawItems
+      const i = this.m_players
         .map(function (x) {
           return x.did;
         })
         .indexOf(did);
-      if (i > -1) this.rawItems.splice(i, 1);
+      if (i > -1) this.m_players.splice(i, 1);
     },
 
     /**
@@ -44,12 +44,12 @@ export const useStore = defineStore({
      */
     updatePing(did) {
       try {
-        const i = this.rawItems
+        const i = this.m_players
           .map(function (x) {
             return x.did;
           })
           .indexOf(did);
-        this.rawItems[i].ping = Math.floor(performance.now());
+        this.m_players[i].ping = Math.floor(performance.now());
       } catch (error) {
         console.error(error);
       }
@@ -61,12 +61,12 @@ export const useStore = defineStore({
      */
     setVote(did, vote) {
       try {
-        const i = this.rawItems
+        const i = this.m_players
           .map(function (x) {
             return x.did;
           })
           .indexOf(did);
-        this.rawItems[i].voted = vote;
+        this.m_players[i].voted = vote;
       } catch (error) {
         console.error(error);
       }
@@ -79,7 +79,7 @@ export const useStore = defineStore({
     updatePlayers(players) {
       players.forEach((player) => {
         try {
-          const i = this.rawItems
+          const i = this.m_players
             .map(function (x) {
               return x.did;
             })
@@ -87,7 +87,7 @@ export const useStore = defineStore({
           if (i == -1) {
             this.addPlayer(player);
           } else {
-            this.rawItems[i] = player;
+            this.m_players[i] = player;
           }
         } catch (error) {
           console.error(error);
@@ -124,4 +124,5 @@ export const useStore = defineStore({
       ).catch(console.error);
     },
   },
+  persist: true,
 });

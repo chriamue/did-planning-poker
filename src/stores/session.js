@@ -22,7 +22,7 @@ export const useStore = defineStore({
     /** @type {object} */
     m_invitation: undefined,
     /** @type {string} */
-    m_host: "",
+    m_host: import.meta.env.VITE_MEDIATOR,
     m_handler: undefined,
     m_interval: undefined,
     m_cards: [],
@@ -91,6 +91,7 @@ export const useStore = defineStore({
      * @param {string} mediator_host
      */
     newSession(alias, cards, mediator_host) {
+      usePlayersStore().m_players = [];
       this.m_cards = cards;
       usePlayersStore().addPlayer({
         did: did_from_b58(useIdStore().key),
@@ -110,6 +111,7 @@ export const useStore = defineStore({
         });
     },
     joinSession(joinParameter, alias) {
+      usePlayersStore().m_players = [];
       usePlayersStore().addPlayer({
         did: did_from_b58(useIdStore().key),
         alias,
@@ -218,5 +220,9 @@ export const useStore = defineStore({
         ).catch(console.error);
       });
     },
+    logout() {
+      this.m_id = undefined;
+    },
   },
+  persist: true,
 });

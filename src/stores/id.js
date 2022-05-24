@@ -46,4 +46,5 @@ export const useStore = defineStore({
       this.m_alias = alias;
     },
   },
+  persist: true,
 });

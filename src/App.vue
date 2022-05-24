@@ -2,13 +2,26 @@
 import InvitationComp from "@/components/InvitationComp.vue";
 import SessionComp from "@/components/SessionComp.vue";
 import JoinComp from "@/components/JoinComp.vue";
+import { useStore } from "./stores/session";
+const session = useStore();
 const params = new URLSearchParams(document.location.search);
 const join = params.get("join");
+const logout = () => {
+  session.logout();
+};
 </script>
 
 <template>
   <header>
     <h1>Did Planning Poker</h1>
+    <button
+      v-if="session.id"
+      type="button"
+      class="btn btn-danger"
+      @click="logout"
+    >
+      Logout
+    </button>
   </header>
 
   <main>
@@ -34,5 +47,10 @@ const join = params.get("join");
 
 header {
   line-height: 1.5;
+}
+header button {
+  position: absolute;
+  top: -10px;
+  right: 20px;
 }
 </style>

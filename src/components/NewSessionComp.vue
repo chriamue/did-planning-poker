@@ -1,14 +1,14 @@
 <script setup>
 import { ref } from "vue";
-import { useStore } from "@/stores/session";
-const host = import.meta.env.VITE_MEDIATOR;
-const alias = ref("anonymous host");
+import { useStore as useSessionStore } from "@/stores/session";
+import { useStore as useIdStore } from "../stores/id";
 const cards = ref("0,1/2,1,2,3,5,8,13,20,40,100");
-const store = useStore();
+const sessionStore = useSessionStore();
+const idStore = useIdStore();
 const newSession = () => {
-  store
-    .newSession(alias, cards.value.split(","), host)
-    .then(() => store.startHandler());
+  sessionStore
+    .newSession(idStore.alias, cards.value.split(","), sessionStore.host)
+    .then(() => sessionStore.startHandler());
 };
 </script>
 <template>
@@ -19,7 +19,7 @@ const newSession = () => {
         id="alias_input"
         type="text"
         class="form-control"
-        v-model="alias"
+        v-model="idStore.m_alias"
       />
       <small id="alias_help" class="form-text text-muted"
         >How do you want be recognized?</small
@@ -27,7 +27,12 @@ const newSession = () => {
     </div>
     <div class="form-group">
       <label for="host_input">Host Url</label>
-      <input id="host_input" type="text" class="form-control" v-model="host" />
+      <input
+        id="host_input"
+        type="text"
+        class="form-control"
+        v-model="sessionStore.m_host"
+      />
       <small id="alias_help" class="form-text text-muted"
         >Url to mediator.</small
       >
