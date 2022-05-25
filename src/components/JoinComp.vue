@@ -20,7 +20,7 @@ const joinSession = () => {
 </script>
 
 <template>
-  <div class="join" v-if="session">
+  <div class="join" v-if="session && !useStore().id">
     <input readonly v-model="id" />
     <input readonly v-model="host" />
     <input readonly v-model="mediator_did" />

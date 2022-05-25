@@ -123,6 +123,11 @@ export const useStore = defineStore({
         `${useSessionStore().host}/didcomm`
       ).catch(console.error);
     },
+    clearCards() {
+      this.players.forEach((player) => {
+        player.voted = "";
+      });
+    },
   },
   persist: true,
 });

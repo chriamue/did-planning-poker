@@ -14,6 +14,8 @@ const voted = (player) => {
     ? player.voted
     : sessionStore.reveal
     ? player.voted
+    : player.voted == ""
+    ? ""
     : "?";
 };
 </script>

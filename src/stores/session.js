@@ -84,6 +84,9 @@ export const useStore = defineStore({
     reveal() {
       return this.m_reveal;
     },
+    isHost() {
+      return this.m_did == useIdStore().did
+    },
   },
   actions: {
     /**
