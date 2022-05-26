@@ -1,6 +1,7 @@
 <script setup>
 import InvitationComp from "@/components/InvitationComp.vue";
 import SessionComp from "@/components/SessionComp.vue";
+import NewSessionComp from "@/components/NewSessionComp.vue";
 import JoinComp from "@/components/JoinComp.vue";
 import { useStore } from "./stores/session";
 const session = useStore();
@@ -30,7 +31,10 @@ const logout = () => {
       <template #fallback> Loading... </template>
     </Suspense>
     <join-comp :join="join" v-if="join" />
-    <session-comp />
+    <div v-else>
+      <session-comp v-if="session.id" />
+      <new-session-comp v-else />
+    </div>
   </main>
 </template>
 

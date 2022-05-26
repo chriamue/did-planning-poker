@@ -29,4 +29,7 @@ const details = ref(false);
   position: absolute;
   right: 20px;
 }
+.session-details input {
+  margin: 5px;
+}
 </style>

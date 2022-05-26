@@ -4,7 +4,6 @@ import { useStore as usePlayersStore } from "@/stores/players";
 import PingComp from "./PingComp.vue";
 import PlayerList from "./PlayerList.vue";
 import CardList from "./CardList.vue";
-import NewSessionComp from "./NewSessionComp.vue";
 import SessionDetailsComp from "./SessionDetailsComp.vue";
 const sessionStore = useStore();
 const playersStore = usePlayersStore();
@@ -21,7 +20,7 @@ const clear = () => {
 </script>
 
 <template>
-  <div class="session" v-if="sessionStore.id">
+  <div class="session">
     <Suspense>
       <ping-comp :host="sessionStore.host" :did="sessionStore.mediator_did" />
       <template #fallback> Loading... </template>
@@ -43,9 +42,6 @@ const clear = () => {
     </div>
 
     <card-list />
-  </div>
-  <div v-else>
-    <new-session-comp />
   </div>
 </template>
 
