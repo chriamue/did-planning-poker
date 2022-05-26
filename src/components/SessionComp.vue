@@ -5,6 +5,7 @@ import PingComp from "./PingComp.vue";
 import PlayerList from "./PlayerList.vue";
 import CardList from "./CardList.vue";
 import SessionDetailsComp from "./SessionDetailsComp.vue";
+import ChartComp from "./ChartComp.vue";
 const sessionStore = useStore();
 const playersStore = usePlayersStore();
 const reveal = () => {
@@ -42,6 +43,7 @@ const clear = () => {
     </div>
 
     <card-list />
+    <chart-comp v-if="sessionStore.reveal" />
   </div>
 </template>
 

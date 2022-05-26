@@ -90,6 +90,15 @@ export const useStore = defineStore({
     interval() {
       return this.m_interval;
     },
+    voteCount() {
+      return this.m_cards.map((card) => {
+        return {
+          card: card,
+          count: usePlayersStore().players.filter(({ voted }) => voted == card)
+            .length,
+        };
+      });
+    },
   },
   actions: {
     /**
