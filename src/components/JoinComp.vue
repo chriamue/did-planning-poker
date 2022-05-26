@@ -9,9 +9,6 @@ if (props.join) {
   session = JSON.parse(atob(props.join));
 }
 const store = useStore();
-const id = session.id;
-const host = session.host;
-const mediator_did = session.mediator_did;
 const idStore = useIdStore();
 const joinSession = () => {
   store.joinSession(props.join, idStore.alias, idStore.icon);
@@ -21,27 +18,50 @@ const joinSession = () => {
 
 <template>
   <div class="join" v-if="session && !useStore().id">
-    <input readonly v-model="id" />
-    <input readonly v-model="host" />
-    <input readonly v-model="mediator_did" />
-    <input id="alias_input" type="text" v-model="idStore.m_alias" />
     <div class="form-group">
-      <label for="icon_input">Icon</label>
-      <input
-        id="icon_input"
-        type="text"
-        class="form-control"
-        v-model="idStore.m_icon"
-      />
-      <small id="alias_help" class="form-text text-muted"
-        >Nice icon for your card</small
-      >
-      <div><img width="200" height="200" :src="idStore.icon" /></div>
+      <div class="host-details form-group">
+        <input disabled v-model="session.did" title="Host did" />
+        <input disabled v-model="session.id" title="Session id" />
+        <input disabled v-model="session.host" title="Mediator Url" />
+        <input disabled v-model="session.mediator_did" title="Mediator did" />
+      </div>
+      <div class="form-group">
+        <label for="alias_input">Alias</label>
+        <input
+          id="alias_input"
+          type="text"
+          class="form-control"
+          v-model="idStore.m_alias"
+        />
+        <small id="alias_help" class="form-text text-muted"
+          >How do you want be recognized?</small
+        >
+      </div>
+      <div class="form-group">
+        <label for="icon_input">Icon</label>
+        <input
+          id="icon_input"
+          type="text"
+          class="form-control"
+          v-model="idStore.m_icon"
+        />
+        <small id="alias_help" class="form-text text-muted"
+          >Nice icon for your card</small
+        >
+        <div><img width="200" height="200" :src="idStore.icon" /></div>
+      </div>
+      <button type="button" class="btn btn-info" @click="() => joinSession()">
+        Join Session
+      </button>
     </div>
-    <button type="button" class="btn btn-info" @click="() => joinSession()">
-      Join Session
-    </button>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.host-details {
+  margin: 10px auto;
+}
+.host-details input {
+  margin: 5px;
+}
+</style>
