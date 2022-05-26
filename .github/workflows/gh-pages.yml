@@ -24,7 +24,7 @@ jobs:
       - name: Build WASM
         run: npm run wasm
       - name: Build App
-        run: npm run build -- --base=/did-planning-poker/
+        run: npm run build
       - name: create gh-pages
         run: mv dist/ gh-pages/
 
