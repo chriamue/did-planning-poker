@@ -8,6 +8,7 @@ import {
   ArcElement,
   CategoryScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useStore as useSessionStore } from "@/stores/session";
 
 // source: https://gist.github.com/bobspace/2712980
@@ -164,6 +165,8 @@ const CSS_COLOR_NAMES = [
 
 const sessionStore = useSessionStore();
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
+ChartJS.register(ChartDataLabels);
+
 const chartData = () => {
   return {
     labels: sessionStore.cards,
