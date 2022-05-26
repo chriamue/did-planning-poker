@@ -20,6 +20,7 @@ Hosts accept clients join message.
     "did": "did:example:client",
     "id": "<SessionId>",
     "alias": "<ClientName>",
+    "icon": "<URL>",
   }
 }
 ```
@@ -28,7 +29,9 @@ Hosts accept clients join message.
 
 id: Session Id from an invitation.
 
-alias: Name, the Client wants visible for others
+alias: Name, the Client wants visible for others.
+
+icon: Some nice icon.
 
 ## accept
 

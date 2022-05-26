@@ -85,7 +85,7 @@ export const useStore = defineStore({
       return this.m_reveal;
     },
     isHost() {
-      return this.m_did == useIdStore().did
+      return this.m_did == useIdStore().did;
     },
   },
   actions: {
@@ -93,12 +93,13 @@ export const useStore = defineStore({
      * generate new session
      * @param {string} mediator_host
      */
-    newSession(alias, cards, mediator_host) {
+    newSession(alias, icon, cards, mediator_host) {
       usePlayersStore().m_players = [];
       this.m_cards = cards;
       usePlayersStore().addPlayer({
         did: did_from_b58(useIdStore().key),
         alias,
+        icon,
         ping: performance.now(),
         voted: "",
       });
@@ -113,11 +114,12 @@ export const useStore = defineStore({
           this.m_invitation = invitation;
         });
     },
-    joinSession(joinParameter, alias) {
+    joinSession(joinParameter, alias, icon) {
       usePlayersStore().m_players = [];
       usePlayersStore().addPlayer({
         did: did_from_b58(useIdStore().key),
         alias,
+        icon,
         ping: performance.now(),
         voted: "",
       });
@@ -127,9 +129,11 @@ export const useStore = defineStore({
       this.m_did = session.did;
       this.m_mediator_did = session.mediator_did;
       useIdStore().setAlias(alias);
+      useIdStore().setIcon(icon);
       send_join(
         session.id,
         alias,
+        icon,
         useIdStore().key,
         session.did,
         session.mediator_did,
@@ -173,6 +177,7 @@ export const useStore = defineStore({
         let player = {
           did: value.did,
           alias: value.alias,
+          icon: value.icon,
           ping: performance.now(),
           voted: "",
         };

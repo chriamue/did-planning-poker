@@ -125,6 +125,7 @@ impl Handler {
                         "to": message.get_didcomm_header().to,
                         "id": body["id"].as_str().unwrap(),
                         "alias": body["alias"].as_str().unwrap(),
+                        "icon": body["icon"].as_str().unwrap(),
                         "did": body["did"].as_str().unwrap(),
                     }))
                     .unwrap();
@@ -183,7 +184,7 @@ impl Handler {
                         }
                         _ => (),
                     }
-                },
+                }
                 "https://github.com/chriamue/did-planning-poker/blob/main/game.md#reveal" => {
                     let body: Value = serde_json::from_str(&message.get_body().unwrap()).unwrap();
                     let value = JsValue::from_serde(&serde_json::json!({

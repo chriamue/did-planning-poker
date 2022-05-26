@@ -10,6 +10,7 @@ use serde_json::json;
 pub struct Player {
     did: String,
     alias: String,
+    icon: String,
     ping: f32,
     voted: String,
 }

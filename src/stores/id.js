@@ -8,6 +8,8 @@ export const useStore = defineStore({
     /** @type {string} */
     private_key: generate_private_key(),
     m_alias: "anonymous",
+    m_icon:
+      "https://upload.wikimedia.org/wikipedia/commons/7/79/Face-smile.svg",
   }),
   getters: {
     /**
@@ -21,6 +23,9 @@ export const useStore = defineStore({
     },
     alias() {
       return this.m_alias;
+    },
+    icon() {
+      return this.m_icon;
     },
   },
   actions: {
@@ -44,6 +49,13 @@ export const useStore = defineStore({
      */
     setAlias(alias) {
       this.m_alias = alias;
+    },
+    /**
+     * update ping response
+     * @param {string} icon
+     */
+    setIcon(icon) {
+      this.m_icon = icon;
     },
   },
   persist: true,

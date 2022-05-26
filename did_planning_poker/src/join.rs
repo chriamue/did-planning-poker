@@ -9,6 +9,7 @@ use serde_json::json;
 pub struct JoinResponseBuilder {
     session: Option<String>,
     alias: Option<String>,
+    icon: Option<String>,
     did: Option<String>,
     message: Option<Message>,
 }
@@ -19,6 +20,7 @@ impl JoinResponseBuilder {
             did: None,
             session: None,
             alias: None,
+            icon: None,
             message: None,
         }
     }
@@ -38,6 +40,11 @@ impl JoinResponseBuilder {
         self
     }
 
+    pub fn icon(&mut self, icon: String) -> &mut Self {
+        self.icon = Some(icon);
+        self
+    }
+
     pub fn message(&mut self, message: Message) -> &mut Self {
         self.message = Some(message);
         self
@@ -48,7 +55,7 @@ impl JoinResponseBuilder {
             .m_type("https://github.com/chriamue/did-planning-poker/blob/main/join.md#join")
             .body(
                 &json!(
-                {"id": self.session.as_ref().unwrap(), "alias": self.alias.as_ref().unwrap(),"did": self.did.as_ref().unwrap()})
+                {"id": self.session.as_ref().unwrap(), "alias": self.alias.as_ref().unwrap(), "icon": self.icon.as_ref().unwrap(), "did": self.did.as_ref().unwrap()})
                 .to_string(),
             ))
     }
@@ -69,6 +76,7 @@ impl JoinResponseBuilder {
 pub async fn send_join(
     session: String,
     alias: String,
+    icon: String,
     key: &KeyPair,
     did_to: String,
     did_mediator: String,
@@ -82,6 +90,7 @@ pub async fn send_join(
     let request = JoinResponseBuilder::new()
         .session(session)
         .alias(alias)
+        .icon(icon)
         .did(did_from.to_string())
         .build_join()
         .unwrap()
@@ -118,6 +127,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .icon("https://example.com/icon".to_string())
             .did("did:example".to_string())
             .build_join()
             .unwrap();

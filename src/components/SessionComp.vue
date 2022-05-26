@@ -32,7 +32,12 @@ const clear = () => {
       <button type="button" class="btn btn-secondary" @click="reveal">
         Reveal or Hide
       </button>
-      <button type="button" class="btn btn-secondary" v-if="sessionStore.isHost" @click="clear">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        v-if="sessionStore.isHost"
+        @click="clear"
+      >
         Clear Votes
       </button>
     </div>

@@ -29,6 +29,7 @@ const voted = (player) => {
       v-for="(player, index) in store.players"
     >
       <div class="card-header" @click="details = !details">
+        <img width="60" height="60" :src="player.icon" />
         {{ player.alias }}
       </div>
       <div class="card-body">
@@ -51,6 +52,12 @@ const voted = (player) => {
 <style scoped>
 .player-list {
   display: flex;
+}
+.card-header {
+  vertical-align: middle;
+}
+.card-header img {
+  margin: 10px;
 }
 .card {
   margin: 5px;

@@ -7,19 +7,19 @@ import { useStore as useSessionStore } from "./session";
 export const useStore = defineStore({
   id: "players",
   state: () => ({
-    /** @type {Array<{ did: string; alias: string, ping: number, voted: string }>} */
+    /** @type {Array<{ did: string; alias: string, icon: string, ping: number, voted: string }>} */
     m_players: [],
   }),
   getters: {
     /**
-     * @returns {Array<{ did: string; alias: string, ping: number, voted: string }>}
+     * @returns {Array<{ did: string; alias: string, icon: string, ping: number, voted: string }>}
      */
     players: (state) => state.m_players,
   },
   actions: {
     /**
      * Add player
-     * @param {{ did: string; alias: string, ping: number, voted: string }} player
+     * @param {{ did: string; alias: string, icon: string, ping: number, voted: string }} player
      */
     addPlayer(player) {
       this.m_players.push(player);
@@ -74,7 +74,7 @@ export const useStore = defineStore({
 
     /**
      * Remove player
-     * @param {Array<{ did: string; alias: string, ping: number, voted: string }>} players
+     * @param {Array<{ did: string; alias: string, icon: string, ping: number, voted: string }>} players
      */
     updatePlayers(players) {
       players.forEach((player) => {

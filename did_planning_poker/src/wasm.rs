@@ -52,13 +52,14 @@ pub async fn send_pong(
 pub async fn send_join(
     session: String,
     alias: String,
+    icon: String,
     private_key: String,
     did_to: String,
     did_mediator: String,
     host: String,
 ) -> String {
     let key = key_from_b58(private_key);
-    crate::join::send_join(session, alias, &key, did_to, did_mediator, host)
+    crate::join::send_join(session, alias, icon, &key, did_to, did_mediator, host)
         .await
         .unwrap()
 }
