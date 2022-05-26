@@ -87,6 +87,9 @@ export const useStore = defineStore({
     isHost() {
       return this.m_did == useIdStore().did;
     },
+    interval() {
+      return this.m_interval;
+    },
   },
   actions: {
     /**

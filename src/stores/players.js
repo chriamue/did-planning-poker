@@ -22,7 +22,20 @@ export const useStore = defineStore({
      * @param {{ did: string; alias: string, icon: string, ping: number, voted: string }} player
      */
     addPlayer(player) {
-      this.m_players.push(player);
+      try {
+        const i = this.m_players
+          .map(function (x) {
+            return x.did;
+          })
+          .indexOf(player.did);
+        if (i >= 0) {
+          this.m_players[i] = player;
+        } else {
+          this.m_players.push(player);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
 
     /**
@@ -49,7 +62,9 @@ export const useStore = defineStore({
             return x.did;
           })
           .indexOf(did);
-        this.m_players[i].ping = Math.floor(performance.now());
+        if (i >= 0) {
+          this.m_players[i].ping = Math.floor(performance.now());
+        }
       } catch (error) {
         console.error(error);
       }
@@ -66,7 +81,9 @@ export const useStore = defineStore({
             return x.did;
           })
           .indexOf(did);
-        this.m_players[i].voted = vote;
+        if (i >= 0) {
+          this.m_players[i].voted = vote;
+        }
       } catch (error) {
         console.error(error);
       }

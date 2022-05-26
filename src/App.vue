@@ -5,6 +5,7 @@ import NewSessionComp from "@/components/NewSessionComp.vue";
 import JoinComp from "@/components/JoinComp.vue";
 import { useStore } from "./stores/session";
 const session = useStore();
+session.stopHandler();
 const params = new URLSearchParams(document.location.search);
 const join = params.get("join");
 const logout = () => {
@@ -15,14 +16,26 @@ const logout = () => {
 <template>
   <header>
     <h1>Did Planning Poker</h1>
-    <button
-      v-if="session.id"
-      type="button"
-      class="btn btn-danger"
-      @click="logout"
-    >
-      Logout
-    </button>
+    <div class="buttons">
+      <button
+        id="join-button"
+        v-if="session.id && !session.interval"
+        type="button"
+        class="btn btn-success"
+        @click="() => session.startHandler()"
+      >
+        Join
+      </button>
+      <button
+        id="logout-button"
+        v-if="session.id"
+        type="button"
+        class="btn btn-danger"
+        @click="logout"
+      >
+        Logout
+      </button>
+    </div>
   </header>
 
   <main>
@@ -30,9 +43,10 @@ const logout = () => {
       <invitation-comp />
       <template #fallback> Loading... </template>
     </Suspense>
-    <join-comp :join="join" v-if="join" />
+
+    <session-comp v-if="session.id" />
     <div v-else>
-      <session-comp v-if="session.id" />
+      <join-comp :join="join" v-if="join" />
       <new-session-comp v-else />
     </div>
   </main>
@@ -52,9 +66,12 @@ const logout = () => {
 header {
   line-height: 1.5;
 }
-header button {
+header .buttons {
   position: absolute;
   top: -10px;
   right: 20px;
+}
+header button {
+  margin: 5px;
 }
 </style>
