@@ -13,6 +13,18 @@ import { useStore as useSessionStore } from "@/stores/session";
 
 // source: https://gist.github.com/bobspace/2712980
 const CSS_COLOR_NAMES = [
+  "Green",
+  "Blue",
+  "Red",
+  "Olive",
+  "Orange",
+  "Indigo",
+  "Grey",
+  "Magenta",
+  "Navy",
+  "Tomato",
+  "Wheat",
+  "YellowGreen",
   "AliceBlue",
   "AntiqueWhite",
   "Aqua",

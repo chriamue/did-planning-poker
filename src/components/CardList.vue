@@ -19,7 +19,7 @@ const vote = (card) => {
 <template>
   <div class="card-list">
     <div
-      class="card"
+      class="card shadow"
       :class="{ shake: disabled == card }"
       @click="() => vote(card)"
       v-bind:key="index"
@@ -38,6 +38,8 @@ const vote = (card) => {
 }
 .card {
   margin: 10px;
+  text-align: center;
+  font-size: x-large;
 }
 .shake {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;

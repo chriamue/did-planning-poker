@@ -22,7 +22,7 @@ const voted = (player) => {
 <template>
   <div class="player-list">
     <div
-      class="card card-flip"
+      class="card shadow card-flip"
       :class="{ reveal: sessionStore.reveal }"
       style="min-width: 8rem"
       v-bind:key="index"
