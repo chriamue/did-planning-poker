@@ -96,14 +96,14 @@ pub async fn send_join(
         .unwrap()
         .from(&did_from);
     let id = request.get_didcomm_header().id.to_string();
-    let request = sign_and_encrypt(&request, &did_to, key);
+    let request = sign_and_encrypt(&request, &did_to, key).unwrap();
 
     let request = ForwardBuilder::new()
         .message(serde_json::to_string(&request).unwrap())
         .did(did_to)
         .build()
         .unwrap();
-    let request = sign_and_encrypt(&request, &did_mediator, key);
+    let request = sign_and_encrypt(&request, &did_mediator, key).unwrap();
     let response = client
         .post(host.clone())
         .json(&request)
@@ -145,6 +145,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .icon("https://example.com/icon".to_string())
             .did("did:example".to_string())
             .build_join()
             .unwrap();
@@ -172,6 +173,7 @@ mod tests {
         let response = JoinResponseBuilder::new()
             .session("42".to_string())
             .alias("alice".to_string())
+            .icon("https://example.com/icon".to_string())
             .did("did:example".to_string())
             .build_join()
             .unwrap();

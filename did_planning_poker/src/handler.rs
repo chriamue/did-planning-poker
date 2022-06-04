@@ -41,7 +41,7 @@ impl Handler {
             .unwrap()
             .from(&self.did);
 
-        let request = sign_and_encrypt(&request, &self.mediator_did, &self.key);
+        let request = sign_and_encrypt(&request, &self.mediator_did, &self.key).unwrap();
         let private_key = self.key.private_key_bytes();
         let host = self.host.to_string();
         future_to_promise(async move {
@@ -54,16 +54,16 @@ impl Handler {
             let response_json = response.text().await.unwrap();
             let received = Message::receive(&response_json, Some(&private_key), None, None);
 
-            assert!(&received.is_ok());
-            let message: Message = received.unwrap();
-
-            let messages: Vec<Message> = message
-                .get_attachments()
-                .map(|attachment| {
-                    let response_json = attachment.data.json.as_ref().unwrap();
-                    Message::receive(response_json, Some(&private_key), None, None).unwrap()
-                })
-                .collect();
+            let messages: Vec<Message> = match received {
+                Ok(message) => message
+                    .get_attachments()
+                    .map(|attachment| {
+                        let response_json = attachment.data.json.as_ref().unwrap();
+                        Message::receive(response_json, Some(&private_key), None, None).unwrap()
+                    })
+                    .collect(),
+                _ => Vec::new(),
+            };
             Ok(JsValue::from_serde(&messages).unwrap())
         })
     }
