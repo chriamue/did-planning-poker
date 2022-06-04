@@ -4,6 +4,9 @@ const store = useStore();
 const interval = setInterval(async () => {
   store.sendPing();
 }, 3000);
+const destoyed = () => {
+  clearInterval(interval);
+};
 </script>
 
 <template>

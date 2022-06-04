@@ -241,6 +241,7 @@ export const useStore = defineStore({
       });
     },
     logout() {
+      this.stopHandler();
       this.m_id = undefined;
     },
   },
