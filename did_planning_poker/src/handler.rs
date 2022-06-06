@@ -41,7 +41,10 @@ impl Handler {
             .unwrap()
             .from(&self.did);
 
-        let request = sign_and_encrypt(&request, &self.mediator_did, &self.key).unwrap();
+        let did_doc = self.key.get_did_document(Default::default());
+        let did_from = did_doc.id.to_string();
+
+        let request = sign_and_encrypt(&request, &did_from, &self.mediator_did, &self.key).unwrap();
         let private_key = self.key.private_key_bytes();
         let host = self.host.to_string();
         future_to_promise(async move {
