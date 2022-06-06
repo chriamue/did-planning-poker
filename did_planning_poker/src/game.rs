@@ -229,20 +229,18 @@ pub async fn send_reveal(
     did_mediator: String,
     host: String,
 ) -> Result<String, &'static str> {
+    let did_doc = key.get_did_document(Default::default());
+    let did_from = did_doc.id.to_string();
     let client = reqwest::Client::new();
 
     let request = GameResponseBuilder::new()
         .id(id)
+        .did(did_from.clone())
         .reveal(reveal)
         .build_reveal()
         .unwrap();
     let id = request.get_didcomm_header().id.to_string();
-    let did_from = request
-        .get_didcomm_header()
-        .from
-        .as_deref()
-        .unwrap()
-        .to_string();
+    
     let request = sign_and_encrypt(&request, &did_from, &did_to, key).unwrap();
 
     let request = ForwardBuilder::new()
