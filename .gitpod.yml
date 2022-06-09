@@ -1,0 +1,4 @@
+
+tasks:
+  - init: cargo install wasm-pack && yarn install && yarn wasm && yarn build
+    command: yarn dev
