@@ -23,14 +23,18 @@ pub async fn send_ping(
         .from(&did_from);
 
     let id = request.get_didcomm_header().id.to_string();
-    let request = sign_and_encrypt(&request, &did_from, &did_to, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_to, key)
+        .await
+        .unwrap();
 
     let request = ForwardBuilder::new()
         .message(serde_json::to_string(&request).unwrap())
         .did(did_to)
         .build()
         .unwrap();
-    let request = sign_and_encrypt(&request, &did_from, &did_mediator, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_mediator, key)
+        .await
+        .unwrap();
     let response = client
         .post(host.clone())
         .json(&request)
@@ -64,14 +68,18 @@ pub async fn send_pong(
         .from(&did_from);
 
     let id = request.get_didcomm_header().id.to_string();
-    let request = sign_and_encrypt(&request, &did_from, &did_to, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_to, key)
+        .await
+        .unwrap();
 
     let request = ForwardBuilder::new()
         .message(serde_json::to_string(&request).unwrap())
         .did(did_to)
         .build()
         .unwrap();
-    let request = sign_and_encrypt(&request, &did_from, &did_mediator, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_mediator, key)
+        .await
+        .unwrap();
     let response = client
         .post(host.clone())
         .json(&request)
@@ -102,7 +110,9 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
 
     let thid = request.get_didcomm_header().id.clone();
 
-    let request = sign_and_encrypt(&request, &did_from, &did_to, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_to, key)
+        .await
+        .unwrap();
 
     let response = client
         .post(host.clone())
@@ -122,7 +132,9 @@ pub async fn ping(key: &KeyPair, did_to: String, host: String) -> Result<u32, &'
         .unwrap()
         .from(&did_from);
 
-    let request = sign_and_encrypt(&request, &did_from, &did_to, key).unwrap();
+    let request = sign_and_encrypt(&request, &did_from, &did_to, key)
+        .await
+        .unwrap();
 
     let response = client.post(host).json(&request).send().await.unwrap();
 

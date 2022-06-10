@@ -1,5 +1,5 @@
 use crate::key_from_b58;
-use did_key::{DIDCore, KeyMaterial, KeyPair};
+use did_key::{generate, DIDCore, KeyMaterial, KeyPair, X25519KeyPair};
 use didcomm_mediator::message::sign_and_encrypt;
 use didcomm_mediator::protocols::messagepickup::MessagePickupResponseBuilder;
 use didcomm_rs::Message;
@@ -41,13 +41,17 @@ impl Handler {
             .unwrap()
             .from(&self.did);
 
+        let private_key = self.key.private_key_bytes().clone();
+        let host = self.host.to_string();
+        let key = generate::<X25519KeyPair>(Some(&private_key.clone()));
         let did_doc = self.key.get_did_document(Default::default());
         let did_from = did_doc.id.to_string();
+        let mediator_did = self.mediator_did.clone();
 
-        let request = sign_and_encrypt(&request, &did_from, &self.mediator_did, &self.key).unwrap();
-        let private_key = self.key.private_key_bytes();
-        let host = self.host.to_string();
         future_to_promise(async move {
+            let request = sign_and_encrypt(&request, &did_from, &mediator_did, &key)
+                .await
+                .unwrap();
             let response = client.post(host).json(&request).send().await.unwrap();
 
             if !response.status().is_success() {
