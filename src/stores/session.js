@@ -117,11 +117,12 @@ export const useStore = defineStore({
       });
       this.m_host = mediator_host;
       return fetch(`${mediator_host}/invitation`)
-        .then(async (r) => (await r.json()).invitation)
+        .then(async (r) => (await r.json()))
         .then((invitation) => {
+          let services = JSON.parse(invitation.services);
           this.m_id = uuidv4();
           this.m_did = did_from_b58(useIdStore().key);
-          this.m_mediator_did = invitation.services[0].recipientKeys[0];
+          this.m_mediator_did = services[0].id.replace("#didcomm", "");
           this.m_invitation_str = JSON.stringify(invitation);
           this.m_invitation = invitation;
         });
